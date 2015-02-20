@@ -11,9 +11,8 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'spring-boot'
+apply plugin: 'idea'
 
 jar {
     baseName = 'killraction-server'
@@ -26,6 +25,9 @@ repositories {
     mavenCentral()
 }
 
+project.ext.cucumberVersion = "1.2.2"
+project.ext.apacheHttpVersion = "4.4"
+project.ext.cassandraDriverVersion = "2.1.4"
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
@@ -33,9 +35,47 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jersey")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-remote-shell")
+    compile("com.datastax.cassandra:cassandra-driver-core:${cassandraDriverVersion}")
+    compile("com.datastax.cassandra:cassandra-driver-mapping:${cassandraDriverVersion}")
+
     testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("info.cukes:cucumber-junit:${cucumberVersion}")
+    testCompile("info.cukes:cucumber-spring:${cucumberVersion}")
+    testCompile("org.apache.httpcomponents:httpclient:${apacheHttpVersion}")
+    testCompile("org.apache.httpcomponents:fluent-hc:${apacheHttpVersion}")
+
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.12'
+    gradleVersion = '2.3'
 }
+
+sourceSets {
+    e2eTest {
+        java {
+            srcDir 'src/e2etest/java'
+        }
+        resources {
+            srcDir 'src/e2etest/resources'
+        }
+        compileClasspath += sourceSets.main.runtimeClasspath
+        compileClasspath += sourceSets.test.compileClasspath
+    }
+}
+
+task e2eTest(type: Test) {
+    description = "Runs End to End Tests"
+    testClassesDir = sourceSets.e2eTest.output.classesDir
+    classpath += sourceSets.e2eTest.runtimeClasspath
+}
+
+check.dependsOn e2eTest
+
+idea {
+    module {
+        //and some extra test source dirs
+        testSourceDirs += file('src/e2etest/java')
+        testSourceDirs += file('src/e2etest/resources')
+    }
+}
+

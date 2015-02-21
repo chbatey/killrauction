@@ -1,5 +1,6 @@
 package info.batey.killrauction.security;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -31,7 +32,8 @@ public class MyStepDefs {
 
     @Then("^the user is rejected as not authorized$")
     public void the_user_is_rejected_as_not_authorized() throws Throwable {
-        assertThat(response.returnResponse().getStatusLine().getStatusCode(), equalTo(HttpStatus.SC_FORBIDDEN));
+        HttpResponse httpResponse = response.returnResponse();
+        assertThat(EntityUtils.toString(httpResponse.getEntity()), httpResponse.getStatusLine().getStatusCode(), equalTo(HttpStatus.SC_FORBIDDEN));
     }
 
     @Given("^the user provides invalid credentials$")
@@ -40,9 +42,15 @@ public class MyStepDefs {
         executor = Executor.newInstance().auth(localhost, "nota", "user").authPreemptive(localhost);
     }
 
-    @Then("^the user is rejected as not authenticated$")
-    public void the_user_is_rejected_as_not_authenticated() throws Throwable {
+    @Given("^the user provides valid credentials$")
+    public void the_user_provides_valid_credentials() throws Throwable {
+        HttpHost localhost = new HttpHost("localhost", 8080);
+        executor = Executor.newInstance().auth(localhost, "chris", "password").authPreemptive(localhost);
+    }
+
+    @Then("^then the auction is created$")
+    public void then_the_auction_is_created() throws Throwable {
         HttpResponse httpResponse = response.returnResponse();
-        assertThat(EntityUtils.toString(httpResponse.getEntity()), httpResponse.getStatusLine().getStatusCode(), equalTo(HttpStatus.SC_FORBIDDEN));
+        assertThat(EntityUtils.toString(httpResponse.getEntity()), httpResponse.getStatusLine().getStatusCode(), equalTo(HttpStatus.SC_CREATED));
     }
 }

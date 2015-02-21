@@ -2,3 +2,6 @@ build
 .idea
 *.iml
 out
+*.ipr
+*.iws
+.gradle

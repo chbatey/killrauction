@@ -1,0 +1,1 @@
+INSERT INTO users (user_name, password, first_name , last_name , emails ) values ('chbatey', 'bananas' 'chris', 'batey' , { 'christopher.batey@gmail.com' }) if not exists;

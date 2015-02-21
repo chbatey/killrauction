@@ -9,7 +9,7 @@ Feature: Security
     When an auction is created
     Then the user is rejected as not authorized
 
-  Scenario: User attempts to access service without correct credentials
+  Scenario: User attempts to access service with valid credentials
     Given the user provides valid credentials
     When an auction is created
     Then then the auction is created

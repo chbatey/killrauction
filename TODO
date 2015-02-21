@@ -1,0 +1,19 @@
+Move todo list to issues when I have connectivity
+
+Spring security: No auth pages
+Client side metrics: Graphite + Coda hale
+Server side metrics
+Remember what the other stream metric thing is
+
+Data modelling:
+Wide row per auction?
+Auction: bids with timeuuid, category (static), name (static), start date (static), end date (static)
+
+Analytics:
+
+HdrHistogram metics
+Immutable tests
+
+New bid = add to steam + save
+On initial request built stream from DB
+RxJava streaming of auction events over HTTP

@@ -1,11 +1,8 @@
 package info.batey.killrauction;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.fluent.Executor;
@@ -21,13 +18,12 @@ import static org.junit.Assert.assertThat;
 public class UserCreationStepDefs {
 
     private Response response;
-    private HttpHost localhost = new HttpHost("localhost", 8080);
-    private Executor executor = Executor.newInstance().auth(localhost, "chris", "password").authPreemptive(localhost);
+    private Executor executor = Executor.newInstance();
 
 
     @Given("^the user name does not exist$")
     public void the_user_name_does_not_exist() throws Throwable {
-        executor = Executor.newInstance();
+        // no-op
     }
 
     @When("^a user is created$")

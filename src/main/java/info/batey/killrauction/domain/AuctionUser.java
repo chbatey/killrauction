@@ -2,14 +2,14 @@ package info.batey.killrauction.domain;
 
 import java.util.Set;
 
-public class User {
+public class AuctionUser {
     private String userName;
     private String md5Password;
     private String firstName;
     private String lastName;
     private Set<String> emails;
 
-    public User(String userName, String md5Password, String firstName, String lastName, Set<String> emails) {
+    public AuctionUser(String userName, String md5Password, String firstName, String lastName, Set<String> emails) {
         this.userName = userName;
         this.md5Password = md5Password;
         this.firstName = firstName;

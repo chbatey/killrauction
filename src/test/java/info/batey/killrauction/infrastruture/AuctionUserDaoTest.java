@@ -4,7 +4,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
-import info.batey.killrauction.domain.User;
+import info.batey.killrauction.domain.AuctionUser;
 import info.batey.killrauction.web.user.UserCreate;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -14,21 +14,22 @@ import org.junit.Test;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class UserDaoTest {
+public class AuctionUserDaoTest {
 
     private static Cluster cluster;
     private static Session session;
 
-    private UserDao underTest;
+    private AuctionUserDao underTest;
     private MessageDigest digest;
     private Base64.Encoder base64 = Base64.getEncoder();
 
-    public UserDaoTest() throws Exception {
+    public AuctionUserDaoTest() throws Exception {
         digest = MessageDigest.getInstance("MD5");
     }
 
@@ -51,7 +52,7 @@ public class UserDaoTest {
     @Before
     public void setUp() throws Exception {
         session.execute("truncate users");
-        underTest = new UserDao(session);
+        underTest = new AuctionUserDao(session);
         underTest.prepareStatements();
     }
 
@@ -65,16 +66,36 @@ public class UserDaoTest {
 
         //then
         assertTrue(userCreated);
-        List<User> usersFromDb = session.execute("select * from users").all().stream().map(row -> new User(
+        List<AuctionUser> usersFromDb = session.execute("select * from users").all().stream().map(row -> new AuctionUser(
                 row.getString("user_name"), row.getString("password"), row.getString("first_name"), row.getString("last_name"), row.<String>getSet("emails", String.class)
-        )).collect(Collectors.<User>toList());
+        )).collect(Collectors.<AuctionUser>toList());
         assertEquals(1, usersFromDb.size());
-        User user = usersFromDb.get(0);
-        assertEquals(userCreate.getUserName(), user.getUserName());
+        AuctionUser auctionUser = usersFromDb.get(0);
+        assertEquals(userCreate.getUserName(), auctionUser.getUserName());
         String encodedPassword = base64.encodeToString(digest.digest(userCreate.getPassword().getBytes(Charsets.UTF_8)));
-        assertEquals(encodedPassword, user.getMd5Password());
-        assertEquals(userCreate.getFirstName(), user.getFirstName());
-        assertEquals(userCreate.getLastName(), user.getLastName());
-        assertEquals(userCreate.getEmails(), user.getEmails());
+        assertEquals(encodedPassword, auctionUser.getMd5Password());
+        assertEquals(userCreate.getFirstName(), auctionUser.getFirstName());
+        assertEquals(userCreate.getLastName(), auctionUser.getLastName());
+        assertEquals(userCreate.getEmails(), auctionUser.getEmails());
+    }
+
+    @Test
+    public void returnEmptyIfNoUser() throws Exception {
+        assertEquals(Optional.<AuctionUser>empty(), underTest.retrieveUser("no_exist"));
+    }
+
+    @Test
+    public void userDoesExist() throws Exception {
+        //given
+        session.execute("insert into users (user_name, password , first_name , last_name , emails ) VALUES " +
+                                          "( 'chbatey', 'password', 'christopher', 'batey', {'blah@blah.com'} );");
+        //when
+        AuctionUser chbatey = underTest.retrieveUser("chbatey").orElseThrow(() -> new AssertionError("Expected AuctionUser"));
+        //then
+        assertEquals("chbatey", chbatey.getUserName());
+        assertEquals("christopher", chbatey.getFirstName());
+        assertEquals("batey", chbatey.getLastName());
+        assertEquals("password", chbatey.getMd5Password());
+        assertEquals(Sets.newHashSet("blah@blah.com"), chbatey.getEmails());
     }
 }

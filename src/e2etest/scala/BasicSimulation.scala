@@ -17,7 +17,7 @@ class BasicSimulation extends Simulation {
     .doNotTrackHeader("1")
 
 
-  val scn = scenario("BasicSimulation")
+  val scn = scenario("Create Auction") // feature is not really implemented yet
     .repeat(100) {
       exec(http("request_1").post("/api/auction").basicAuth("chris", "password")).pause(10 milliseconds)
     }

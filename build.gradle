@@ -11,6 +11,7 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'scala'
 apply plugin: 'spring-boot'
 apply plugin: 'idea'
 
@@ -28,6 +29,7 @@ repositories {
 project.ext.cucumberVersion = "1.2.2"
 project.ext.apacheHttpVersion = "4.4"
 project.ext.cassandraDriverVersion = "2.1.4"
+project.ext.gatlingVersion = "2.1.4"
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
@@ -43,6 +45,11 @@ dependencies {
     testCompile("info.cukes:cucumber-spring:${cucumberVersion}")
     testCompile("org.apache.httpcomponents:httpclient:${apacheHttpVersion}")
     testCompile("org.apache.httpcomponents:fluent-hc:${apacheHttpVersion}")
+
+    // for performance testing
+    testCompile "org.scala-lang:scala-library:2.11.5"
+    testCompile "io.gatling:gatling-app:${gatlingVersion}"
+    testCompile "io.gatling.highcharts:gatling-charts-highcharts:${gatlingVersion}"
 
 }
 
@@ -77,5 +84,15 @@ idea {
         testSourceDirs += file('src/e2etest/java')
         testSourceDirs += file('src/e2etest/resources')
     }
+}
+
+task runLoadTest(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath + sourceSets.e2eTest.runtimeClasspath
+
+    jvmArgs = [ '-Dgatling.core.directory.binaries=./build/classes/e2eTest' ]
+    // Gatling application
+    main = "io.gatling.app.Gatling"
+    // Specify the simulation to run
+    args = Eval.me("['-s', 'BasicSimulation']")
 }
 

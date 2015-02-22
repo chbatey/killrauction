@@ -19,7 +19,11 @@ public class UserCreate {
     private Set<String> emails;
 
     @JsonCreator
-    public UserCreate(String userName, String password, String firstName, String lastName, Set<String> emails) {
+    public UserCreate(@JsonProperty("username") String userName,
+                      @JsonProperty("password") String password,
+                      @JsonProperty("firstName") String firstName,
+                      @JsonProperty("lastName") String lastName,
+                      @JsonProperty("email") Set<String> emails) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;

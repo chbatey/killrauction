@@ -1,5 +1,7 @@
 package info.batey.killrauction;
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import org.apache.catalina.Context;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -25,27 +27,4 @@ public class Application {
 
     }
 
-    @Bean
-    public EmbeddedServletContainerFactory sessionlessServletContainer() {
-        TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-        factory.setTomcatContextCustomizers(Arrays.asList(new CustomCustomizer()));
-        return factory;
-    }
-
-    @Bean
-    public Blah hello() {
-        return new Blah();
-
-    }
-
-    public static class Blah {
-
-    }
-
-    public static class CustomCustomizer implements TomcatContextCustomizer {
-        @Override
-        public void customize(Context context) {
-            context.setUseHttpOnly(false);
-        }
-    }
 }

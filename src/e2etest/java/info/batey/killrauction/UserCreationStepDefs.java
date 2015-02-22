@@ -27,12 +27,12 @@ public class UserCreationStepDefs {
 
     @Given("^the user name does not exist$")
     public void the_user_name_does_not_exist() throws Throwable {
-        executor = Executor.newInstance().auth(localhost, "idontexist", "atall").authPreemptive(localhost);
+        executor = Executor.newInstance();
     }
 
     @When("^a user is created$")
     public void a_user_is_created() throws Throwable {
-        StringEntity userEntry = new StringEntity(" {\"userName\": \"chbatey\", \"firstName\":\"Chris\", \"lastName\":\"Batey\", \"password\": \"banana\", \"email\":\"christopher.batey@gmail.com\" }", ContentType.APPLICATION_JSON);
+        StringEntity userEntry = new StringEntity(" {\"userName\": \"chbatey\", \"firstName\":\"Chris\", \"lastName\":\"Batey\", \"password\": \"banana\", \"email\":[\"christopher.batey@gmail.com\"] }", ContentType.APPLICATION_JSON);
         response = executor.execute(Request.Post("http://localhost:8080/api/user").body(userEntry));
     }
 

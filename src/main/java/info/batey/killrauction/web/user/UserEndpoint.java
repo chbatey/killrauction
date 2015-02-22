@@ -12,7 +12,7 @@ public class UserEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserEndpoint.class);
 
-    @RequestMapping(value = "/api/user", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON})
+    @RequestMapping(value = "/api/user", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public String createUser(@RequestBody UserCreate userCreate) {
         LOGGER.debug("Received create user request {}", userCreate);

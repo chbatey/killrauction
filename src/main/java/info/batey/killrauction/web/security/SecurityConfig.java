@@ -49,5 +49,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/user").anonymous();
 
     }
-
 }

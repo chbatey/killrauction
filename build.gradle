@@ -35,10 +35,13 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-jersey")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-remote-shell")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("com.datastax.cassandra:cassandra-driver-core:${cassandraDriverVersion}")
     compile("com.datastax.cassandra:cassandra-driver-mapping:${cassandraDriverVersion}")
+    compile("io.dropwizard.metrics:metrics-core:3.1.0")
+    compile("io.dropwizard.metrics:metrics-graphite:3.1.0")
+    compile 'com.ryantenney.metrics:metrics-spring:3.0.4'
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("info.cukes:cucumber-junit:${cucumberVersion}")

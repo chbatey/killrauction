@@ -1,5 +1,6 @@
 package info.batey.killrauction.web.user;
 
+import com.codahale.metrics.annotation.Timed;
 import info.batey.killrauction.infrastruture.AuctionUserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,10 @@ public class AuctionUserEndpoint {
 
     @RequestMapping(value = "/api/user", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
+    @Timed
     public void createUser(@RequestBody UserCreate userCreate) {
         LOGGER.debug("Received create user request {}", userCreate);
         auctionUserDao.createUser(userCreate);
     }
+
 }

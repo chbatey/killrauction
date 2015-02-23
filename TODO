@@ -7,6 +7,7 @@ Move todo list to issues when I have connectivity
 Client side metrics: Graphite + Coda hale
 Server side metrics
 Remember what the other stream metric thing is
+Cassandra health check
 
 Data modelling:
 Wide row per auction?

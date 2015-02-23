@@ -9,16 +9,16 @@ public class GlobalSteps {
 
     @Before
     public void startApp() {
-        if (!started) {
-            final ConfigurableApplicationContext app = SpringApplication.run(Application.class);
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    app.stop();
-                }
-            });
-            started = true;
-        }
+//        if (!started) {
+//            final ConfigurableApplicationContext app = SpringApplication.run(Application.class);
+//            Runtime.getRuntime().addShutdownHook(new Thread() {
+//                @Override
+//                public void run() {
+//                    app.stop();
+//                }
+//            });
+//            started = true;
+//        }
     }
 
 }

@@ -1,6 +1,9 @@
 Move todo list to issues when I have connectivity
 
-Spring security: No auth pages
+* Create user via API then use it
+* User already exists
+
+
 Client side metrics: Graphite + Coda hale
 Server side metrics
 Remember what the other stream metric thing is

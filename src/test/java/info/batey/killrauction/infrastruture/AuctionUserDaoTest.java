@@ -10,16 +10,25 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AuctionUserDaoTest {
 
     private static Cluster cluster;
@@ -28,6 +37,12 @@ public class AuctionUserDaoTest {
     private AuctionUserDao underTest;
     private MessageDigest digest;
     private Base64.Encoder base64 = Base64.getEncoder();
+
+    @Mock
+    private Md5PasswordEncoder md5PasswordEncoder;
+
+    @Mock
+    private SecureRandom secure;
 
     public AuctionUserDaoTest() throws Exception {
         digest = MessageDigest.getInstance("MD5");
@@ -39,7 +54,7 @@ public class AuctionUserDaoTest {
         session = cluster.connect();
         session.execute("CREATE KEYSPACE IF NOT EXISTS killrauction_tests WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 }");
         session.execute("use killrauction_tests");
-        session.execute("CREATE TABLE IF NOT EXISTS users ( user_name text PRIMARY KEY, password text, first_name text , last_name text , emails set<text> )");
+        session.execute("CREATE TABLE IF NOT EXISTS users ( user_name text PRIMARY KEY, password text, salt bigint, first_name text , last_name text , emails set<text> )");
     }
 
     @AfterClass
@@ -52,7 +67,7 @@ public class AuctionUserDaoTest {
     @Before
     public void setUp() throws Exception {
         session.execute("truncate users");
-        underTest = new AuctionUserDao(session);
+        underTest = new AuctionUserDao(session, md5PasswordEncoder, secure);
         underTest.prepareStatements();
     }
 
@@ -60,6 +75,8 @@ public class AuctionUserDaoTest {
     public void createsUser() throws Exception {
         //given
         UserCreate userCreate = new UserCreate("chbatey", "bananas", "chris", "batey", Sets.newHashSet("christopher.batey@gmail.com"));
+        given(md5PasswordEncoder.encodePassword(anyString(), anyString())).willReturn("saltedPassword");
+        given(secure.nextLong()).willReturn(10l);
 
         //when
         boolean userCreated = underTest.createUser(userCreate);
@@ -67,16 +84,16 @@ public class AuctionUserDaoTest {
         //then
         assertTrue(userCreated);
         List<AuctionUser> usersFromDb = session.execute("select * from users").all().stream().map(row -> new AuctionUser(
-                row.getString("user_name"), row.getString("password"), row.getString("first_name"), row.getString("last_name"), row.<String>getSet("emails", String.class)
-        )).collect(Collectors.<AuctionUser>toList());
+                row.getString("user_name"), row.getString("password"), row.getLong("salt"), row.getString("first_name"), row.getString("last_name"),
+                row.getSet("emails", String.class))).collect(Collectors.<AuctionUser>toList());
         assertEquals(1, usersFromDb.size());
         AuctionUser auctionUser = usersFromDb.get(0);
         assertEquals(userCreate.getUserName(), auctionUser.getUserName());
-        String encodedPassword = base64.encodeToString(digest.digest(userCreate.getPassword().getBytes(Charsets.UTF_8)));
-        assertEquals(encodedPassword, auctionUser.getMd5Password());
+        assertEquals("saltedPassword", auctionUser.getMd5Password());
         assertEquals(userCreate.getFirstName(), auctionUser.getFirstName());
         assertEquals(userCreate.getLastName(), auctionUser.getLastName());
         assertEquals(userCreate.getEmails(), auctionUser.getEmails());
+        assertEquals(Long.valueOf(10l), auctionUser.getSalt());
     }
 
     @Test
@@ -87,8 +104,8 @@ public class AuctionUserDaoTest {
     @Test
     public void userDoesExist() throws Exception {
         //given
-        session.execute("insert into users (user_name, password , first_name , last_name , emails ) VALUES " +
-                                          "( 'chbatey', 'password', 'christopher', 'batey', {'blah@blah.com'} );");
+        session.execute("insert into users (user_name, password, salt, first_name, last_name, emails ) VALUES " +
+                                          "( 'chbatey', 'password', 100, 'christopher', 'batey', {'blah@blah.com'} );");
         //when
         AuctionUser chbatey = underTest.retrieveUser("chbatey").orElseThrow(() -> new AssertionError("Expected AuctionUser"));
         //then
@@ -96,6 +113,7 @@ public class AuctionUserDaoTest {
         assertEquals("christopher", chbatey.getFirstName());
         assertEquals("batey", chbatey.getLastName());
         assertEquals("password", chbatey.getMd5Password());
+        assertEquals(Long.valueOf(100), chbatey.getSalt());
         assertEquals(Sets.newHashSet("blah@blah.com"), chbatey.getEmails());
     }
 }

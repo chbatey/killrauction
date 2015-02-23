@@ -3,6 +3,9 @@ package info.batey.killrauction.web.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.dao.ReflectionSaltSource;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,9 +25,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Inject
+    private Md5PasswordEncoder md5PasswordEncoder;
+
+    @Inject
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         LOGGER.info("Setting up users");
-        auth.userDetailsService(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setPasswordEncoder(md5PasswordEncoder);
+        authProvider.setUserDetailsService(userDetailsService);
+        ReflectionSaltSource saltSource = new ReflectionSaltSource();
+        saltSource.setUserPropertyToUse("salt");
+        authProvider.setSaltSource(saltSource);
+        auth.authenticationProvider(authProvider);
     }
 
     @Override

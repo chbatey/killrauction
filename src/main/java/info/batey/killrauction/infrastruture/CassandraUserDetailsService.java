@@ -2,8 +2,8 @@ package info.batey.killrauction.infrastruture;
 
 import com.google.common.collect.Sets;
 import info.batey.killrauction.domain.AuctionUser;
+import info.batey.killrauction.web.security.UserWithSalt;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +25,6 @@ public class CassandraUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AuctionUser user = auctionUserDao.retrieveUser(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
-        return new User(user.getUserName(), user.getMd5Password(), Sets.newHashSet(new SimpleGrantedAuthority("ROLE_USER")));
+        return new UserWithSalt(user.getUserName(), user.getSalt(), user.getMd5Password(), Sets.newHashSet(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }

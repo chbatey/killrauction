@@ -43,5 +43,4 @@ public class SecurityStepDefs {
         AuctionServiceClient.LastResponse lastResponse = AuctionServiceClient.instance.getLastResponse();
         assertThat(lastResponse.body(), lastResponse.statusCode(), equalTo(HttpStatus.SC_CREATED));
     }
-
 }

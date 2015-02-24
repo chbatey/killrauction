@@ -27,5 +27,4 @@ public class AuctionUserEndpoint {
         LOGGER.debug("Received create user request {}", userCreate);
         auctionUserDao.createUser(userCreate);
     }
-
 }

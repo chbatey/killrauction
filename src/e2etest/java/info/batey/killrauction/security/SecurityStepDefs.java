@@ -29,7 +29,7 @@ public class SecurityStepDefs {
 
     @When("^an auction is created$")
     public void an_auction_is_created() throws Throwable {
-        AuctionServiceClient.instance.createAuction();
+        AuctionServiceClient.instance.createAuction("new_auction");
     }
 
     @Then("^the user is rejected as not authorized$")

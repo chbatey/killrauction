@@ -29,7 +29,7 @@ public class AuctionServiceClient {
         executor = Executor.newInstance().auth(userName, password);
     }
 
-    public void createAuction() throws IOException {
+    public void createAuction(String auctionName) throws IOException {
         lastResponse = new LastResponse(executor.execute(Request.Post("http://localhost:8080/api/auction")).returnResponse());
     }
 

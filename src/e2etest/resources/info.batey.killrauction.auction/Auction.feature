@@ -1,4 +1,6 @@
 Feature: Creation and viewing of Auctions
+  Background:
+    Given all requests are made with a valid user
 
   Scenario: Creating an Auction
     Given the auction does not already exist

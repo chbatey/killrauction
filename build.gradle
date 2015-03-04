@@ -94,7 +94,7 @@ task runLoadTest(type: JavaExec) {
     // Gatling application
     main = "io.gatling.app.Gatling"
     // Specify the simulation to run
-    args = Eval.me("['-s', 'info.batey.killrauction.BasicSimulation']")
+    args = Eval.me("['-s', 'info.batey.killrauction.UserServiceSimulation']")
 }
 
 check.dependsOn e2eTest

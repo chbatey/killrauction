@@ -35,4 +35,14 @@ public class UserCreationStepDefs {
         AuctionServiceClient.instance.useUserNameAndPassword("new_user", "password");
     }
 
+    @Given("^the user already exists$")
+    public void the_user_already_exists() throws Throwable {
+        AuctionServiceClient.instance.createUser("new_user", "password");
+    }
+
+    @Then("^the request is rejected due to user already existing$")
+    public void the_request_is_rejected_due_to_user_already_existing() throws Throwable {
+        AuctionServiceClient.LastResponse lastResponse = AuctionServiceClient.instance.getLastResponse();
+        assertThat(lastResponse.body(), lastResponse.statusCode(), equalTo(HttpStatus.SC_PRECONDITION_FAILED));
+    }
 }

@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
 
@@ -94,6 +92,19 @@ public class AuctionUserDaoTest {
         assertEquals(userCreate.getLastName(), auctionUser.getLastName());
         assertEquals(userCreate.getEmails(), auctionUser.getEmails());
         assertEquals(Long.valueOf(10l), auctionUser.getSalt());
+    }
+
+    @Test
+    public void createUserThatAlreadyExists() throws Exception {
+        //given
+        UserCreate userCreate = new UserCreate("chbatey", "bananas", "chris", "batey", Sets.newHashSet("christopher.batey@gmail.com"));
+        underTest.createUser(userCreate);
+
+        //when
+        boolean userCreated = underTest.createUser(userCreate);
+
+        //then
+        assertFalse("Expected user creation to fail", userCreated);
     }
 
     @Test

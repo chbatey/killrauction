@@ -2,6 +2,7 @@ package info.batey.killrauction;
 
 import cucumber.api.java.Before;
 import info.batey.killrauction.client.AuctionServiceClient;
+import info.batey.killrauction.infrastructure.CassandraClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -21,6 +22,7 @@ public class GlobalSteps {
             started = true;
         }
         AuctionServiceClient.instance.reset();
+        CassandraClient.instance.clearTables();
     }
 
 }

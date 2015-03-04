@@ -7,7 +7,7 @@ import org.springframework.context.ConfigurableApplicationContext
 
 import scala.concurrent.duration._
 
-class BasicSimulation extends Simulation {
+class AuctionCreationSimulation extends Simulation {
   val app: ConfigurableApplicationContext = SpringApplication.run(classOf[Application])
   Runtime.getRuntime.addShutdownHook(new Thread() {
     override def run(): Unit = app.stop()
@@ -20,7 +20,7 @@ class BasicSimulation extends Simulation {
   val userName = "chris"
   val password = "password"
 
-  val scn = scenario("Create Auction") // feature is not really implemented yet
+  val scn = scenario("Create Auction")
     .exec(http("create_user").post("/api/user")
       .body(StringBody(s""" {"userName": "$userName", "firstName":"Chris", "lastName":"Batey", "password": "$password", "email":["christopher.batey@gmail.com"] }"""))
       .header("Content-Type", "application/json")

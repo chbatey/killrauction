@@ -1,10 +1,5 @@
 Move todo list to issues when I have connectivity
 
-* Create user via API then use it
-* User already exists
-
-
-Client side metrics: Graphite + Coda hale
 Server side metrics
 Remember what the other stream metric thing is
 Cassandra health check
@@ -15,7 +10,7 @@ Auction: bids with timeuuid, category (static), name (static), start date (stati
 
 Analytics:
 
-HdrHistogram metics
+HdrHistogram metrics
 Immutable tests
 
 New bid = add to steam + save

@@ -2,6 +2,7 @@ package info.batey.killrauction.infrastruture;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.google.common.base.Charsets;
 import info.batey.killrauction.domain.AuctionUser;
@@ -52,9 +53,9 @@ public class AuctionUserDao {
         LOGGER.debug("Creating user {}", userCreate);
         Object salt = secureRandom.nextLong();
         String endcodedPassword = md5PasswordEncoder.encodePassword(userCreate.getPassword(), salt);
-        BoundStatement boundStatement = createUser.bind(userCreate.getUserName(), endcodedPassword, salt    , userCreate.getFirstName(), userCreate.getLastName(), userCreate.getEmails());
-        session.execute(boundStatement);
-        return true;
+        BoundStatement boundStatement = createUser.bind(userCreate.getUserName(), endcodedPassword, salt, userCreate.getFirstName(), userCreate.getLastName(), userCreate.getEmails());
+        ResultSet response = session.execute(boundStatement);
+        return response.wasApplied();
     }
 
     public Optional<AuctionUser> retrieveUser(String userName) {

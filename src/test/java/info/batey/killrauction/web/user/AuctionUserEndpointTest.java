@@ -9,6 +9,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,8 +28,16 @@ public class AuctionUserEndpointTest {
 
     @Test
     public void shouldSendUserToDao() throws Exception {
+        given(auctionUserDao.createUser(any(UserCreate.class))).willReturn(true);
         UserCreate userCreate = new UserCreate("username", "password", "firstName", "lastName", Collections.emptySet());
         underTest.createUser(userCreate);
         verify(auctionUserDao).createUser(userCreate);
+    }
+
+    @Test(expected = AuctionUserEndpoint.UserExistsException.class)
+    public void userAlreadyExists() throws Exception {
+        given(auctionUserDao.createUser(any(UserCreate.class))).willReturn(false);
+        UserCreate userCreate = new UserCreate("username", "password", "firstName", "lastName", Collections.emptySet());
+        underTest.createUser(userCreate);
     }
 }

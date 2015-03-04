@@ -10,3 +10,8 @@ Feature: User creation
     And that user logs in
     When an auction is created
     Then then the auction is created
+
+  Scenario: Create an existing user
+    Given the user already exists
+    When a user is created
+    Then the request is rejected due to user already existing

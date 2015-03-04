@@ -1,10 +1,11 @@
-import info.batey.killrauction.Application
+package info.batey.killrauction
+
 import io.gatling.core.Predef._
+import io.gatling.http.Predef._
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
-import io.gatling.http.Predef._
+
 import scala.concurrent.duration._
-import scala.language.postfixOps
 
 class BasicSimulation extends Simulation {
   val app: ConfigurableApplicationContext = SpringApplication.run(classOf[Application])
@@ -16,10 +17,19 @@ class BasicSimulation extends Simulation {
     .baseURL("http://localhost:8080")
     .doNotTrackHeader("1")
 
+  val userName = "chris"
+  val password = "password"
 
   val scn = scenario("Create Auction") // feature is not really implemented yet
+    .exec(http("create_user").post("/api/user")
+      .body(StringBody(s""" {"userName": "$userName", "firstName":"Chris", "lastName":"Batey", "password": "$password", "email":["christopher.batey@gmail.com"] }"""))
+      .header("Content-Type", "application/json")
+    )
     .repeat(100) {
-      exec(http("request_1").post("/api/auction").basicAuth("chris", "password")).pause(10 milliseconds)
+      exec(http("request_1").post("/api/auction")
+        .body(StringBody(""" {"name": "auction_name", "end":123456789 } """))
+        .header("Content-Type", "application/json")
+        .basicAuth(userName, password)).pause(10 milliseconds)
     }
 
   setUp(

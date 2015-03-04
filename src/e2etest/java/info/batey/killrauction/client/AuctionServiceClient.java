@@ -55,6 +55,10 @@ public class AuctionServiceClient {
         return objectMapper.readValue(body, GetAuctionResponse.class);
     }
 
+    public void reset() {
+        executor  = Executor.newInstance();
+    }
+
     public static class LastResponse {
 
         private HttpResponse execute;

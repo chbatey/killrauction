@@ -1,5 +1,6 @@
 package info.batey.killrauction.user;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -33,4 +34,5 @@ public class UserCreationStepDefs {
         // Express the Regexp above with the code you wish you had
         AuctionServiceClient.instance.useUserNameAndPassword("new_user", "password");
     }
+
 }

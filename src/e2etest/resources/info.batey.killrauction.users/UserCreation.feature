@@ -1,4 +1,5 @@
 Feature: User creation
+
   Scenario: Create new User
     Given the user name does not exist
     When a user is created

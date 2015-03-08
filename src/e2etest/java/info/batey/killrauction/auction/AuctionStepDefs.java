@@ -1,5 +1,7 @@
 package info.batey.killrauction.auction;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -32,5 +34,27 @@ public class AuctionStepDefs {
     public void all_requests_are_made_with_a_valid_user() throws Throwable {
         AuctionServiceClient.instance.createUser("username", "password");
         AuctionServiceClient.instance.useUserNameAndPassword("username", "password");
+    }
+
+    @Given("^an auction exists for an ipad$")
+    public void an_auction_exists_for_an_ipad() throws Throwable {
+        AuctionServiceClient.instance.createAuction("ipad");
+    }
+
+    @When("^a user makes a bid$")
+    public void a_user_makes_a_bid() throws Throwable {
+        AuctionServiceClient.instance.placeBid("ipad", 100);
+    }
+
+    @Then("^the bid is accepted$")
+    public void the_bid_is_accepted() throws Throwable {
+        // Express the Regexp above with the code you wish you had
+        throw new PendingException();
+    }
+
+    @And("^the bid is viewable by others$")
+    public void the_bid_is_viewable_by_others() throws Throwable {
+        // Express the Regexp above with the code you wish you had
+        throw new PendingException();
     }
 }

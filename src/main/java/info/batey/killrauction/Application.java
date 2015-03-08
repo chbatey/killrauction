@@ -5,6 +5,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.datastax.driver.core.Session;
+import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
+import com.mangofactory.swagger.models.dto.ApiInfo;
+import com.mangofactory.swagger.plugin.EnableSwagger;
+import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.inject.Inject;
 import java.net.InetSocketAddress;
@@ -27,9 +33,13 @@ import java.util.concurrent.TimeUnit;
 @EnableAutoConfiguration(exclude = { org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class })
 @ComponentScan
 @EnableMetrics
+@EnableSwagger
 public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
+    @Inject
+    private SpringSwaggerConfig springSwaggerConfig;
 
     @Inject
     private MetricRegistry metricRegistry;
@@ -56,6 +66,17 @@ public class Application {
                 .build(graphite);
         reporter.start(30, TimeUnit.SECONDS);
         return reporter;
+    }
+
+    @Bean
+    public SwaggerSpringMvcPlugin customImplementation() {
+        return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).apiInfo(apiInfo());
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfo("Auction Service", "API for Auction service",
+                "Auction API terms of service", "email",
+                "Some licence", "Some licence URL");
     }
 
     public static void main (String[] args) {

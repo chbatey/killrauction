@@ -24,6 +24,9 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url "http://oss.jfrog.org/artifactory/oss-release-local"
+    }
 }
 
 project.ext.cucumberVersion = "1.2.2"
@@ -41,7 +44,9 @@ dependencies {
     compile("com.datastax.cassandra:cassandra-driver-mapping:${cassandraDriverVersion}")
     compile("io.dropwizard.metrics:metrics-core:3.1.0")
     compile("io.dropwizard.metrics:metrics-graphite:3.1.0")
-    compile 'com.ryantenney.metrics:metrics-spring:3.0.4'
+    compile("com.ryantenney.metrics:metrics-spring:3.0.4")
+    compile("com.mangofactory:swagger-springmvc:0.9.5")
+    compile("org.ajar:swagger-spring-mvc-ui:0.4")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("info.cukes:cucumber-junit:${cucumberVersion}")

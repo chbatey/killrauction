@@ -59,6 +59,13 @@ public class AuctionServiceClient {
         executor  = Executor.newInstance();
     }
 
+    public void placeBid(String auction, int amountInPence) throws IOException {
+        String auctionJson = String.format("{\"name\":\"%s\",\"amount\":\"%d\"}", auction, amountInPence);
+        Response execute = executor.execute(Request.Post(host + "/api/auction/" + auction + "/bid").body(new StringEntity(auctionJson, ContentType.APPLICATION_JSON)));
+        HttpResponse execute1 = execute.returnResponse();
+        lastResponse = new LastResponse(execute1);
+    }
+
     public static class LastResponse {
 
         private HttpResponse execute;

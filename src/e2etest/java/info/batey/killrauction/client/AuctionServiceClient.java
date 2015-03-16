@@ -10,6 +10,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AuctionServiceClient {
 
@@ -64,6 +65,10 @@ public class AuctionServiceClient {
         Response execute = executor.execute(Request.Post(host + "/api/auction/" + auction + "/bid").body(new StringEntity(auctionJson, ContentType.APPLICATION_JSON)));
         HttpResponse execute1 = execute.returnResponse();
         lastResponse = new LastResponse(execute1);
+    }
+
+    public List<Integer> getBidsForAuction(String ipad) {
+        return null;
     }
 
     public static class LastResponse {

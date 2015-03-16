@@ -7,10 +7,17 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import info.batey.killrauction.client.AuctionServiceClient;
 import info.batey.killrauction.client.GetAuctionResponse;
+import info.batey.killrauction.service.AuctionService;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public class AuctionStepDefs {
     @Given("^the auction does not already exist$")
@@ -48,13 +55,13 @@ public class AuctionStepDefs {
 
     @Then("^the bid is accepted$")
     public void the_bid_is_accepted() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+        AuctionServiceClient.LastResponse lastResponse = AuctionServiceClient.instance.getLastResponse();
+        assertThat(lastResponse.statusCode(), equalTo(HttpStatus.SC_CREATED));
     }
 
     @And("^the bid is viewable by others$")
     public void the_bid_is_viewable_by_others() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+        List<Integer> bids = AuctionServiceClient.instance.getBidsForAuction("ipad");
+        assertThat(bids, hasItems(100));
     }
 }

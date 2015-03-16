@@ -13,6 +13,11 @@ Feature: Creation and viewing of Auctions
     Then the bid is accepted
     And the bid is viewable by others
 
+  Scenario: Retrieving all auctions
+    Given multiple auctions exist
+    When a user requests all auctions
+    Then the auctions are returned
+
   # todo: removal of bids
   # todo: can't bid for less than last time
   # todo: bid for auction that does not exist

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import java.security.Principal;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class AuctionEndpoint {
@@ -37,6 +40,14 @@ public class AuctionEndpoint {
     public void create(@RequestBody AuctionDto auctionDto) {
         LOGGER.debug("Incoming auction create {}", auctionDto);
         auctionApplicationService.createAuction(auctionDto.getName(), Instant.ofEpochMilli(auctionDto.getExpires()));
+    }
+
+    @RequestMapping(value = "/api/auction", method = {RequestMethod.GET})
+    @ResponseStatus(HttpStatus.OK)
+    public List<AuctionDto> getAllAuction() {
+        return auctionApplicationService.getAuctions().stream()
+                .map(auction -> new AuctionDto(auction.getName(), auction.getEnds().toEpochMilli(), Collections.emptyList()))
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/api/auction/{auctionName}", method = {RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_VALUE})

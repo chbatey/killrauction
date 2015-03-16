@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,10 @@ public class AuctionServiceClient {
     }
 
     public HttpResponse createAuction(String auctionName) throws IOException {
-        long expires = System.currentTimeMillis() + 10000;
+        return createAuction(auctionName, System.currentTimeMillis() + 1000);
+    }
+
+    public HttpResponse createAuction(String auctionName, long expires) throws IOException {
         String auctionJson = String.format("{\"name\":\"%s\",\"end\":\"%d\"}", auctionName, expires);
         Response execute = executor.execute(Request.Post(host + "/api/auction").body(new StringEntity(auctionJson, ContentType.APPLICATION_JSON)));
         HttpResponse execute1 = execute.returnResponse();
@@ -78,6 +82,19 @@ public class AuctionServiceClient {
         Response execute = executor.execute(Request.Post(host + "/api/auction/" + auction + "/bid").body(new StringEntity(auctionJson, ContentType.APPLICATION_JSON)));
         HttpResponse execute1 = execute.returnResponse();
         lastResponse = new LastResponse(execute1);
+    }
+
+    public Optional<List<GetAuctionResponse>> getAllAuctions() throws IOException {
+        HttpResponse httpResponse = executor.execute(Request.Get(host + "/api/auction"))
+                .returnResponse();
+        String body = EntityUtils.toString(httpResponse.getEntity());
+
+        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+            return Optional.of(objectMapper.readValue(body, GetAuctionResponse[].class)).map(Arrays::asList);
+        } else {
+            LOGGER.info("GetAllAuction returned non-200 response code {} body {}", httpResponse.getStatusLine().getStatusCode(), body);
+            return Optional.empty();
+        }
     }
 
     public static class LastResponse {

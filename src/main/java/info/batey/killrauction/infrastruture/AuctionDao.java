@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class AuctionDao {
@@ -23,6 +24,7 @@ public class AuctionDao {
     private PreparedStatement createAuction;
     private PreparedStatement getAuction;
     private PreparedStatement storeBid;
+    private PreparedStatement getAllAuction;
 
     @Inject
     public AuctionDao(Session session) {
@@ -33,6 +35,7 @@ public class AuctionDao {
     public void prepareStatements() {
         createAuction = session.prepare("insert INTO auctions (name, bid_amount , bid_time, ends ) VALUES ( ?, -1, ?, ?)");
         getAuction = session.prepare("select * from auctions where name = ?");
+        getAllAuction = session.prepare("select * from auctions");
         storeBid = session.prepare("INSERT INTO auctions (name, bid_time , bid_amount , bid_user) VALUES ( ?, ?, ?, ?);");
     }
 
@@ -44,6 +47,14 @@ public class AuctionDao {
     public void placeBid(String auctionName, String user, Long amount) {
         BoundStatement bound = storeBid.bind(auctionName, UUIDs.timeBased(), amount, user);
         session.execute(bound);
+    }
+
+    //todo: won't work once there are bids
+    public List<Auction> getAllAuctionsSparse() {
+        BoundStatement bound = getAllAuction.bind();
+        return session.execute(bound).all().stream().map(row ->
+                new Auction(row.getString("name"), Instant.ofEpochMilli(row.getLong("ends"))))
+                .collect(Collectors.toList());
     }
 
     public Optional<Auction> getAuction(String auctionName) {

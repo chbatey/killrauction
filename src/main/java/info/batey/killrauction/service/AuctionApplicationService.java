@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,5 +40,9 @@ public class AuctionApplicationService {
 
     public void placeBid(String auctionName, String user, Long auctionBid) {
         auctionDao.placeBid(auctionName, user, auctionBid);
+    }
+
+    public List<Auction> getAuctions() {
+        return auctionDao.getAllAuctionsSparse();
     }
 }

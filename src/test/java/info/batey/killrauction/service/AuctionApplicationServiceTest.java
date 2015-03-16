@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -16,6 +18,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,5 +71,17 @@ public class AuctionApplicationServiceTest {
         underTest.placeBid(auctionName, "user", 100l);
 
         verify(auctionDao).placeBid(auctionName, "user", 100l);
+    }
+
+    @Test
+    public void getAllAuctionsFromDao() throws Exception {
+        Auction auctionOne = mock(Auction.class);
+        Auction auctionTwo = mock(Auction.class);
+        List<Auction> expectedAuctions = Arrays.asList(auctionOne, auctionTwo);
+        given(auctionDao.getAllAuctionsSparse()).willReturn(expectedAuctions);
+
+        List<Auction> actualAuactions = underTest.getAuctions();
+
+        assertSame(expectedAuctions, actualAuactions);
     }
 }

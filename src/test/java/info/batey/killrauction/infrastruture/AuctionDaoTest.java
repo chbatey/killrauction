@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -53,6 +54,20 @@ public class AuctionDaoTest {
         assertEquals(expectedAuction.getName(), actualAuction.getName());
         assertEquals(expectedAuction.getEnds(), actualAuction.getEnds());
         assertEquals(expectedAuction.getBids(), actualAuction.getBids());
+    }
+
+    @Test
+    public void getAllAuctions() throws Exception {
+        Auction ipadAuction = new Auction("ipad", Instant.now());
+        underTest.createAuction(ipadAuction);
+        Auction pcAuaction = new Auction("pc", Instant.now());
+        underTest.createAuction(pcAuaction);
+
+        List<Auction> allAuctionsSparse = underTest.getAllAuctionsSparse();
+
+        assertEquals(2, allAuctionsSparse.size());
+        assertEquals("ipad", allAuctionsSparse.get(0).getName());
+        assertEquals("pc", allAuctionsSparse.get(1).getName());
     }
 
     @Test

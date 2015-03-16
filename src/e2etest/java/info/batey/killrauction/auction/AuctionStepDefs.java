@@ -1,5 +1,6 @@
 package info.batey.killrauction.auction;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -7,17 +8,23 @@ import cucumber.api.java.en.When;
 import info.batey.killrauction.client.AuctionServiceClient;
 import info.batey.killrauction.client.GetAuctionResponse;
 import info.batey.killrauction.domain.BidVo;
+import info.batey.killrauction.infrastructure.CassandraClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 
 public class AuctionStepDefs {
+
+    private Optional<List<GetAuctionResponse>> allAuctions;
+
     @Given("^the auction does not already exist$")
     public void the_auction_does_not_already_exist() throws Throwable {
     }
@@ -63,4 +70,28 @@ public class AuctionStepDefs {
         assertTrue("No bids returned", bids.isPresent());
         assertThat(bids.get().getBids(), hasItems(new BidVo("username", 100l)));
     }
+
+    @Given("^multiple auctions exist$")
+    public void multiple_auctions_exist() throws Throwable {
+        AuctionServiceClient.instance.createAuction("one", 1);
+        AuctionServiceClient.instance.createAuction("two", 1);
+        AuctionServiceClient.instance.createAuction("three", 1);
+    }
+
+    @When("^a user requests all auctions$")
+    public void a_user_requests_all_auctions() throws Throwable {
+        allAuctions = AuctionServiceClient.instance.getAllAuctions();
+    }
+
+    @Then("^the auctions are returned$")
+    public void the_auctions_are_returned() throws Throwable {
+        assertThat("Expected auctions to be returned", allAuctions.isPresent(), equalTo(true));
+        List<GetAuctionResponse> getAuctionResponses = allAuctions.get();
+        assertThat(getAuctionResponses.size(), equalTo(3));
+        assertThat(getAuctionResponses, hasItems(
+                new GetAuctionResponse("three", 1, Collections.emptyList()),
+                new GetAuctionResponse("one", 1, Collections.emptyList()),
+                new GetAuctionResponse("two", 1, Collections.emptyList())));
+    }
+
 }

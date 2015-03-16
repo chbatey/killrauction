@@ -8,20 +8,26 @@ import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class AuctionServiceClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuctionServiceClient.class);
+
     public static final AuctionServiceClient instance = new AuctionServiceClient();
 
-    private Executor executor  = Executor.newInstance();
+    private Executor executor = Executor.newInstance();
     private LastResponse lastResponse;
     private String host = "http://localhost:8080";
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private AuctionServiceClient() {}
+    private AuctionServiceClient() {
+    }
 
     public void createUser(String userName, String password) throws IOException {
         StringEntity userEntry = new StringEntity(String.format(" {\"userName\": \"%s\", \"firstName\":\"Chris\", \"lastName\":\"Batey\", \"password\": \"%s\", \"email\":[\"christopher.batey@gmail.com\"] }", userName, password),
@@ -35,7 +41,7 @@ public class AuctionServiceClient {
 
     public HttpResponse createAuction(String auctionName) throws IOException {
         long expires = System.currentTimeMillis() + 10000;
-        String auctionJson = String.format("{\"name\":\"%s\",\"end\":\"%d\"}", auctionName, expires );
+        String auctionJson = String.format("{\"name\":\"%s\",\"end\":\"%d\"}", auctionName, expires);
         Response execute = executor.execute(Request.Post(host + "/api/auction").body(new StringEntity(auctionJson, ContentType.APPLICATION_JSON)));
         HttpResponse execute1 = execute.returnResponse();
         lastResponse = new LastResponse(execute1);
@@ -50,14 +56,21 @@ public class AuctionServiceClient {
         executor = Executor.newInstance();
     }
 
-    public GetAuctionResponse getAuction(String auctionName) throws IOException {
-        String body = EntityUtils.toString(executor.execute(Request.Get(host + "/api/auction/" + auctionName))
-                .returnResponse().getEntity());
-        return objectMapper.readValue(body, GetAuctionResponse.class);
+    public Optional<GetAuctionResponse> getAuction(String auctionName) throws IOException {
+        HttpResponse httpResponse = executor.execute(Request.Get(host + "/api/auction/" + auctionName))
+                .returnResponse();
+        String body = EntityUtils.toString(httpResponse.getEntity());
+
+        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+            return Optional.of(objectMapper.readValue(body, GetAuctionResponse.class));
+        } else {
+            LOGGER.info("GetAuction returned non-200 response code {} body {}", httpResponse.getStatusLine().getStatusCode(), body);
+            return Optional.empty();
+        }
     }
 
     public void reset() {
-        executor  = Executor.newInstance();
+        executor = Executor.newInstance();
     }
 
     public void placeBid(String auction, int amountInPence) throws IOException {
@@ -65,10 +78,6 @@ public class AuctionServiceClient {
         Response execute = executor.execute(Request.Post(host + "/api/auction/" + auction + "/bid").body(new StringEntity(auctionJson, ContentType.APPLICATION_JSON)));
         HttpResponse execute1 = execute.returnResponse();
         lastResponse = new LastResponse(execute1);
-    }
-
-    public List<Integer> getBidsForAuction(String ipad) {
-        return null;
     }
 
     public static class LastResponse {
@@ -87,5 +96,4 @@ public class AuctionServiceClient {
             return EntityUtils.toString(execute.getEntity());
         }
     }
-
 }

@@ -4,7 +4,6 @@ import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
-import com.google.common.base.Charsets;
 import info.batey.killrauction.domain.AuctionUser;
 import info.batey.killrauction.web.user.UserCreate;
 import org.slf4j.Logger;
@@ -14,10 +13,7 @@ import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Optional;
 
 @Component
@@ -55,7 +51,9 @@ public class AuctionUserDao {
         String endcodedPassword = md5PasswordEncoder.encodePassword(userCreate.getPassword(), salt);
         BoundStatement boundStatement = createUser.bind(userCreate.getUserName(), endcodedPassword, salt, userCreate.getFirstName(), userCreate.getLastName(), userCreate.getEmails());
         ResultSet response = session.execute(boundStatement);
-        return response.wasApplied();
+        boolean applied = response.wasApplied();
+        LOGGER.debug("User created {}", applied);
+        return applied;
     }
 
     public Optional<AuctionUser> retrieveUser(String userName) {

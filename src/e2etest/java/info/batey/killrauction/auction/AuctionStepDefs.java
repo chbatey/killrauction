@@ -1,23 +1,21 @@
 package info.batey.killrauction.auction;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import info.batey.killrauction.client.AuctionServiceClient;
 import info.batey.killrauction.client.GetAuctionResponse;
-import info.batey.killrauction.service.AuctionService;
+import info.batey.killrauction.domain.BidVo;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class AuctionStepDefs {
     @Given("^the auction does not already exist$")
@@ -32,7 +30,7 @@ public class AuctionStepDefs {
 
     @Then("^other users can see the auction$")
     public void other_users_can_see_the_auction() throws Throwable {
-        GetAuctionResponse newAuction = AuctionServiceClient.instance.getAuction("new_auction");
+        GetAuctionResponse newAuction = AuctionServiceClient.instance.getAuction("new_auction").get();
         assertNotNull(newAuction);
         assertEquals("new_auction", newAuction.getName());
     }
@@ -61,7 +59,8 @@ public class AuctionStepDefs {
 
     @And("^the bid is viewable by others$")
     public void the_bid_is_viewable_by_others() throws Throwable {
-        List<Integer> bids = AuctionServiceClient.instance.getBidsForAuction("ipad");
-        assertThat(bids, hasItems(100));
+        Optional<GetAuctionResponse> bids = AuctionServiceClient.instance.getAuction("ipad");
+        assertTrue("No bids returned", bids.isPresent());
+        assertThat(bids.get().getBids(), hasItems(new BidVo("username", 100l)));
     }
 }

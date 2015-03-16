@@ -1,42 +1,42 @@
 package info.batey.killrauction.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Auction {
-
     private final String name;
-    private final Instant expires;
+    private final Instant ends;
+    private final List<BidVo> bids = new ArrayList<>();
 
-    @JsonCreator
-    public Auction(@JsonProperty("name") String name, @JsonProperty("end") long end) {
+    public Auction(String name, Instant ends) {
         this.name = name;
-        this.expires = Instant.ofEpochMilli(end);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Auction auction = (Auction) o;
-
-        if (expires != null ? !expires.equals(auction.expires) : auction.expires != null) return false;
-        if (name != null ? !name.equals(auction.name) : auction.name != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (expires != null ? expires.hashCode() : 0);
-        return result;
+        this.ends = ends;
     }
 
     public String getName() {
         return name;
+    }
+
+    public Instant getEnds() {
+        return ends;
+    }
+
+    public List<BidVo> getBids() {
+        return Collections.unmodifiableList(bids);
+    }
+
+    @Override
+    public String toString() {
+        return "Auction{" +
+                "name='" + name + '\'' +
+                ", ends=" + ends +
+                ", bids=" + bids +
+                '}';
+    }
+
+    public void bid(BidVo auctionBidVo) {
+        this.bids.add(auctionBidVo);
     }
 }

@@ -15,3 +15,4 @@ Feature: Creation and viewing of Auctions
 
   # todo: removal of bids
   # todo: can't bid for less than last time
+  # todo: bid for auction that does not exist

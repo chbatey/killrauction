@@ -8,11 +8,17 @@ import java.util.List;
 public class Auction {
     private final String name;
     private final Instant ends;
-    private final List<BidVo> bids = new ArrayList<>();
+    private List<BidVo> bids = new ArrayList<>();
 
     public Auction(String name, Instant ends) {
         this.name = name;
         this.ends = ends;
+    }
+
+    public Auction(String name, Instant ends, List<BidVo> bids) {
+        this.name = name;
+        this.ends = ends;
+        this.bids = bids;
     }
 
     public String getName() {

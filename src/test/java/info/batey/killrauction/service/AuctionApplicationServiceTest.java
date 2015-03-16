@@ -1,57 +1,72 @@
 package info.batey.killrauction.service;
 
 import info.batey.killrauction.domain.Auction;
-import info.batey.killrauction.domain.BidVo;
+import info.batey.killrauction.infrastruture.AuctionDao;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AuctionApplicationServiceTest {
 
     private AuctionApplicationService underTest;
 
+    @Mock
+    private AuctionDao auctionDao;
+
     @Before
     public void setUp() throws Exception {
-        underTest = new AuctionApplicationService();
+        underTest = new AuctionApplicationService(auctionDao);
     }
 
     @Test
-    public void storeAndRetrieveAuction() throws Exception {
+    public void getAuction() throws Exception {
         String auctionName = "blah";
         Instant ends = Instant.ofEpochMilli(1);
-        Auction auction = new Auction(auctionName, ends);
+        Optional<Auction> auction = Optional.of(new Auction(auctionName, ends));
+        given(auctionDao.getAuction(auctionName)).willReturn(auction);
 
-        Auction returnedFromCreate = underTest.createAuction(auctionName, ends);
+        Optional<Auction> actualAuction = underTest.getAuction(auctionName);
 
-        assertEquals(auction.getName(), returnedFromCreate.getName());
-        assertEquals(auction.getEnds(), returnedFromCreate.getEnds());
-        assertEquals(auction.getBids(), returnedFromCreate.getBids());
+        assertSame(auction, actualAuction);
+    }
 
-        Auction auctionFromGet = underTest.getAuction(auctionName).get();
-        assertEquals(auction.getName(), auctionFromGet.getName());
-        assertEquals(auction.getEnds(), auctionFromGet.getEnds());
-        assertEquals(auction.getBids(), auctionFromGet.getBids());
+    @Test
+    public void createAuction() throws Exception {
+        String auctionName = "blah";
+        Instant ends = Instant.ofEpochMilli(1);
+
+        Auction auction = underTest.createAuction(auctionName, ends);
+
+        verify(auctionDao).createAuction(any(Auction.class));
+        assertEquals(auctionName, auction.getName());
+        assertEquals(ends, auction.getEnds());
     }
 
     @Test
     public void getAuctionThatDoesNotExist() throws Exception {
+        given(auctionDao.getAuction(anyString())).willReturn(Optional.empty());
         assertEquals(Optional.<Auction>empty(), underTest.getAuction("any"));
     }
 
     @Test
     public void recordsBid() throws Exception {
         String auctionName = "blah";
-        Instant ends = Instant.ofEpochMilli(1);
-        underTest.createAuction(auctionName, ends);
 
         underTest.placeBid(auctionName, "user", 100l);
-        Optional<Auction> auction = underTest.getAuction(auctionName);
 
-        assertEquals(Arrays.asList(new BidVo("user", 100l)), auction.get().getBids());
+        verify(auctionDao).placeBid(auctionName, "user", 100l);
     }
 }

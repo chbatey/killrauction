@@ -2,7 +2,6 @@ package info.batey.killrauction.infrastruture;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import info.batey.killrauction.domain.AuctionUser;
 import info.batey.killrauction.web.user.UserCreate;
@@ -15,9 +14,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
-import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,18 +30,12 @@ public class AuctionUserDaoTest {
     private static Session session;
 
     private AuctionUserDao underTest;
-    private MessageDigest digest;
-    private Base64.Encoder base64 = Base64.getEncoder();
 
     @Mock
     private Md5PasswordEncoder md5PasswordEncoder;
 
     @Mock
     private SecureRandom secure;
-
-    public AuctionUserDaoTest() throws Exception {
-        digest = MessageDigest.getInstance("MD5");
-    }
 
     @BeforeClass
     public static void schemaSetup() throws Exception {

@@ -1,12 +1,12 @@
 Move todo list to issues when I have connectivity
 
+User registration
+Log out
+Owner of auction - show / delete etc
+
 Server side metrics
 Remember what the other stream metric thing is
 Cassandra health check
-
-Data modelling:
-Wide row per auction?
-Auction: bids with timeuuid, category (static), name (static), start date (static), end date (static)
 
 Analytics:
 

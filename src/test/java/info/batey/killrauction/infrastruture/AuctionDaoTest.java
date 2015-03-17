@@ -27,7 +27,8 @@ public class AuctionDaoTest {
         session = cluster.connect();
         session.execute("CREATE KEYSPACE IF NOT EXISTS killrauction_tests WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 }");
         session.execute("use killrauction_tests");
-        session.execute("CREATE TABLE IF NOT EXISTS auctions ( name text, ends bigint static, bid_time timeuuid, bid_user text, bid_amount bigint, primary KEY (name, bid_amount, bid_time ) ) WITH CLUSTERING ORDER BY (bid_amount DESC )");
+        session.execute("CREATE TABLE IF NOT EXISTS auction_bids ( name text, bid_time timeuuid, bid_user text, bid_amount bigint, primary KEY (name, bid_amount, bid_time ) ) WITH CLUSTERING ORDER BY (bid_amount DESC )");
+        session.execute("CREATE TABLE IF NOT EXISTS auctions ( name text primary key, ends bigint)");
     }
 
     @AfterClass
@@ -40,6 +41,7 @@ public class AuctionDaoTest {
     @Before
     public void setUp() throws Exception {
         session.execute("truncate auctions");
+        session.execute("truncate auction_bids");
         underTest = new AuctionDao(session);
         underTest.prepareStatements();
     }

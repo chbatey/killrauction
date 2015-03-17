@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,7 +25,8 @@ public class AuctionDao {
     private PreparedStatement createAuction;
     private PreparedStatement getAuction;
     private PreparedStatement storeBid;
-    private PreparedStatement getAllAuction;
+    private PreparedStatement getAllAuctionSparse;
+    private PreparedStatement getAuctionBids;
 
     @Inject
     public AuctionDao(Session session) {
@@ -33,14 +35,15 @@ public class AuctionDao {
 
     @PostConstruct
     public void prepareStatements() {
-        createAuction = session.prepare("insert INTO auctions (name, bid_amount , bid_time, ends ) VALUES ( ?, -1, ?, ?)");
+        createAuction = session.prepare("insert INTO auctions (name, ends ) VALUES (?, ?)");
         getAuction = session.prepare("select * from auctions where name = ?");
-        getAllAuction = session.prepare("select * from auctions");
-        storeBid = session.prepare("INSERT INTO auctions (name, bid_time , bid_amount , bid_user) VALUES ( ?, ?, ?, ?);");
+        getAuctionBids = session.prepare("select * from auction_bids where name = ?");
+        getAllAuctionSparse = session.prepare("select * from auctions");
+        storeBid = session.prepare("INSERT INTO auction_bids (name, bid_time , bid_amount , bid_user) VALUES ( ?, ?, ?, ?);");
     }
 
     public void createAuction(Auction auction) {
-        BoundStatement bound = createAuction.bind(auction.getName(), UUIDs.timeBased(), auction.getEnds().toEpochMilli());
+        BoundStatement bound = createAuction.bind(auction.getName(), auction.getEnds().toEpochMilli());
         session.execute(bound);
     }
 
@@ -49,40 +52,22 @@ public class AuctionDao {
         session.execute(bound);
     }
 
-    //todo: won't work once there are bids
     public List<Auction> getAllAuctionsSparse() {
-        BoundStatement bound = getAllAuction.bind();
+        BoundStatement bound = getAllAuctionSparse.bind();
         return session.execute(bound).all().stream().map(row ->
                 new Auction(row.getString("name"), Instant.ofEpochMilli(row.getLong("ends"))))
                 .collect(Collectors.toList());
     }
 
+    //todo make these async
     public Optional<Auction> getAuction(String auctionName) {
+
         BoundStatement bound = getAuction.bind(auctionName);
-        List<Row> rows = session.execute(bound).all();
-        AuctionBuilder collect = rows.stream().collect(AuctionBuilder::new, AuctionBuilder::accept, AuctionBuilder::combine);
-        return Optional.of(new Auction(collect.name, Instant.ofEpochMilli(collect.end), collect.bids));
-    }
+        Row rows = session.execute(bound).one();
 
-    private static class AuctionBuilder {
-        private String name;
-        private long end;
-        private List<BidVo> bids = new ArrayList<>();
+        BoundStatement bidsBound = getAuctionBids.bind(auctionName);
+        List<BidVo> bids = session.execute(bidsBound).all().stream().map(row -> new BidVo(row.getString("bid_user"), row.getLong("bid_amount"))).collect(Collectors.toList());
 
-        public void accept(Row row) {
-            this.name = row.getString("name");
-            this.end = row.getLong("ends");
-
-            long bid_amount = row.getLong("bid_amount");
-            if (bid_amount != -1) {
-                this.bids.add(new BidVo(row.getString("bid_user"), bid_amount));
-            }
-        }
-
-        public void combine(AuctionBuilder that) {
-            assert(this.name.equals(that.name));
-            assert(this.end == that.end);
-            this.bids.addAll(that.bids);
-        }
+        return Optional.of(new Auction(rows.getString("name"), Instant.ofEpochMilli(rows.getLong("ends")), bids));
     }
 }

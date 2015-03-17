@@ -7,7 +7,6 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.2'
     }
 }
 
@@ -15,8 +14,6 @@ apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'spring-boot'
 apply plugin: 'idea'
-apply plugin: 'jrebel'
-
 
 jar {
     baseName = 'killraction-server'

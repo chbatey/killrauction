@@ -1,1 +1,10 @@
-Hello World {{ name }}
+<table ng-table="tableParams"  class="table">
+    <tr ng-repeat="auction in auctions">
+        <td data-title="'Name'" >
+            {{auction.name}}
+        </td>
+        <td data-title="'Ends'">
+            {{auction.expires}}
+        </td>
+    </tr>
+</table>

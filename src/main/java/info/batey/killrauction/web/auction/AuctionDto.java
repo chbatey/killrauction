@@ -52,4 +52,13 @@ public class AuctionDto {
         result = 31 * result + (bids != null ? bids.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "AuctionDto{" +
+                "name='" + name + '\'' +
+                ", expires=" + expires +
+                ", bids=" + bids +
+                '}';
+    }
 }

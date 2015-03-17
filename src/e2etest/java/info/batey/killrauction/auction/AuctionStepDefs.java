@@ -1,6 +1,5 @@
 package info.batey.killrauction.auction;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -8,7 +7,6 @@ import cucumber.api.java.en.When;
 import info.batey.killrauction.client.AuctionServiceClient;
 import info.batey.killrauction.client.GetAuctionResponse;
 import info.batey.killrauction.domain.BidVo;
-import info.batey.killrauction.infrastructure.CassandraClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 

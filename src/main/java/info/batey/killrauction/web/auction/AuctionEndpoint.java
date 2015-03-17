@@ -30,7 +30,7 @@ public class AuctionEndpoint {
     @RequestMapping(value = "/api/auction/{auctionName}/bid", method = {RequestMethod.POST})
     @ResponseStatus(HttpStatus.CREATED)
     public void placeBid(@PathVariable String auctionName, @RequestBody AuctionBid auctionBid, Principal principal) {
-        LOGGER.debug("Incoming auction bid {} for auction {}", auctionBid, auctionName);
+        LOGGER.debug("Incoming auction bid {} for auction {} with username {}", auctionBid, auctionName, principal.getName());
         auctionApplicationService.placeBid(auctionName, principal.getName(), auctionBid.getAmount());
     }
 

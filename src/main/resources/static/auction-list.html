@@ -1,7 +1,7 @@
 <table ng-table="tableParams"  class="table">
     <tr ng-repeat="auction in auctions">
         <td data-title="'Name'" >
-            {{auction.name}}
+            <a href="#/auction-view/{{ auction.name }}">{{auction.name}} </a>
         </td>
         <td data-title="'Ends'">
             {{auction.expires}}

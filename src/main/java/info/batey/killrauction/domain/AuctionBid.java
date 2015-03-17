@@ -40,4 +40,12 @@ public class AuctionBid {
         result = 31 * result + (int) (amount ^ (amount >>> 32));
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "AuctionBid{" +
+                "name='" + name + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }

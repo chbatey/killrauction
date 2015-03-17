@@ -19,6 +19,10 @@ weatherApp.config(['$routeProvider',
                 templateUrl: 'auction-create.html',
                 controller: 'AuctionCreationController'
             }).
+            when('/auction-view/:auction', {
+                templateUrl: 'auction-view.html',
+                controller: 'AuctionViewController'
+            }).
             otherwise({
                 redirectTo: '/auction'
             });

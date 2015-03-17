@@ -1,0 +1,21 @@
+<h2>Auction: {{ auction.name }}</h2>
+<p>Expires: {{ auction.expires }}</p>
+<div class="container">
+    <form ng-submit="submit()" role="form">
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="text" ng-model="bid.price" id="price" class="form-control"/>
+        </div>
+        <input type="submit" id="bid" value="Bid" class="btn btn-default"/>
+    </form>
+</div>
+<table ng-table="tableParams"  class="table">
+    <tr ng-repeat="bid in auction.bids">
+        <td data-title="'User'" >
+            {{bid.user}}
+        </td>
+        <td data-title="'Bid'">
+            {{bid.amount}}
+        </td>
+    </tr>
+</table>

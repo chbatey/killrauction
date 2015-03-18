@@ -24,8 +24,8 @@ auctionControllers.controller('AuctionCreationController', ['$scope', '$http',
         };
     }]);
 
-auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$routeParams', '$websocket',
+    function ($scope, $http, $routeParams, $websocket) {
         $scope.auction = {}
         $http.get("/api/auction/" + $routeParams.auction).success(function (data) {
             $scope.auction = data
@@ -35,6 +35,23 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
             $http.post("/api/auction/"  + $routeParams.auction + "/bid", {name: $routeParams.auction, amount: $scope.bid.price} )
             $scope.bid = {}
         };
+
+        var ws = $websocket.$new("ws://localhost:8080/api/bid-stream")
+        ws.$on('$open', function () {
+            console.log('Oh my gosh, websocket is really open! Fukken awesome!');
+        });
+
+        ws.$on('pong', function (data) {
+            console.log('The websocket server has sent the following data:');
+            console.log(data);
+            $scope.$apply(function() {
+                $scope.liveData = data
+            });
+        });
+
+        ws.$on('$close', function () {
+            console.log('Noooooooooou, I want to have more fun with ngWebsocket, damn it!');
+        });
 
     }]);
 

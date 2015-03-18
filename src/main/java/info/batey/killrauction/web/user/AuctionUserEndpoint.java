@@ -28,16 +28,6 @@ public class AuctionUserEndpoint {
         if (!auctionUserDao.createUser(userCreate)) throw new UserExistsException();
     }
 
-    @RequestMapping(value = "/blah", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.CREATED)
-    @Timed
-    public void blah() throws UserExistsException {
-        LOGGER.debug("wah bah");
-
-
-//        throw new RuntimeException("bhaha");
-    }
-
     // todo not a fan of exceptions, look for alternative once have wifi
     @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     public class UserExistsException extends Exception {

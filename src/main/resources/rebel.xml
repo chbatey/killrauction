@@ -2,9 +2,9 @@
 <application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.zeroturnaround.com" xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
 
 	<classpath>
-		<dir name="/Users/chbatey/dev/datastax/killrauction/build/classes/main">
+		<dir name="/home/chbatey/dev/datastax/killr-auction/build/classes/main">
 		</dir>
-        <dir name="/Users/chbatey/dev/datastax/killrauction/src/main/resources"/>
+        <dir name="/home/chbatey/dev/datastax/killr-auction/src/main/resources"/>
 	</classpath>
 
 </application>

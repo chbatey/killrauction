@@ -46,10 +46,11 @@ public class AuctionUserDao {
     }
 
     public boolean createUser(UserCreate userCreate) {
-        LOGGER.debug("Creating user {}", userCreate);
+        LOGGER.debug("Creating user request {}", userCreate);
         Object salt = secureRandom.nextLong();
         String endcodedPassword = md5PasswordEncoder.encodePassword(userCreate.getPassword(), salt);
         BoundStatement boundStatement = createUser.bind(userCreate.getUserName(), endcodedPassword, salt, userCreate.getFirstName(), userCreate.getLastName(), userCreate.getEmails());
+        LOGGER.debug("Sending to Cassandra {}", userCreate);
         ResultSet response = session.execute(boundStatement);
         boolean applied = response.wasApplied();
         LOGGER.debug("User created {}", applied);

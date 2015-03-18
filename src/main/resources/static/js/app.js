@@ -23,7 +23,11 @@ weatherApp.config(['$routeProvider',
                 templateUrl: 'auction-view.html',
                 controller: 'AuctionViewController'
             }).
+            when('/user', {
+                templateUrl: 'user-create.html',
+                controller: 'UserCreationController'
+            }).
             otherwise({
-                redirectTo: '/auction'
+                redirectTo: '/user'
             });
     }]);

@@ -38,3 +38,11 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
 
     }]);
 
+auctionControllers.controller('UserCreationController', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.submit = function () {
+            var user = $scope.user
+            $http.post("/api/user", {userName: user.userName, password: user.password, firstName: user.firstName, lastName: user.lastName, emails: [user.email]})
+            $scope.user = {}
+        };
+    }]);

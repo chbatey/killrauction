@@ -5,7 +5,7 @@ Feature: User creation
     When a user is created
     Then then the user creation is successful
 
-  Scenario: Create new User and use it
+  Scenario: Use newly created user
     Given a user is created
     And that user logs in
     When an auction is created
@@ -15,3 +15,8 @@ Feature: User creation
     Given the user already exists
     When a user is created
     Then the request is rejected due to user already existing
+
+  Scenario: Logged on user can create another user
+    Given the user provides valid credentials
+    When a user is created
+    Then then the user creation is successful

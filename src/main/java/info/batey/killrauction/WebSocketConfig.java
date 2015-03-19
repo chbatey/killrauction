@@ -32,7 +32,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer im
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/portfolio").withSockJS();
+        registry.addEndpoint("/hello").withSockJS();
     }
 
 

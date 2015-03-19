@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Hello WebSocket</title>
-    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
-    <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+    <script src="bower_components/stomp-websocket/lib/stomp.js"></script>
+    <script src="bower_components/sockjs-client/dist/sockjs.js"></script>
     <script type="text/javascript">
         var stompClient = null;
 
@@ -21,7 +21,7 @@
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/greetings', function(greeting){
-                    showGreeting(JSON.parse(greeting.body).content);
+                    showGreeting(JSON.parse(greeting.body));
                 });
             });
         }
@@ -43,7 +43,7 @@
             var response = document.getElementById('response');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
+            p.appendChild(document.createTextNode(message.user + ' ' + message.amount));
             response.appendChild(p);
         }
     </script>

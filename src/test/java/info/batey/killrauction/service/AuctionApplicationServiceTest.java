@@ -31,7 +31,7 @@ public class AuctionApplicationServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        underTest = new AuctionApplicationService(auctionDao);
+        underTest = new AuctionApplicationService(auctionDao, bidService);
     }
 
     @Test

@@ -7,6 +7,8 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.utils.UUIDs;
 import info.batey.killrauction.domain.Auction;
 import info.batey.killrauction.domain.BidVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class AuctionDao {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(AuctionDao.class);
 
     private Session session;
     private PreparedStatement createAuction;
@@ -62,8 +66,10 @@ public class AuctionDao {
     //todo make these async
     public Optional<Auction> getAuction(String auctionName) {
 
-        BoundStatement bound = getAuction.bind(auctionName);
-        Row rows = session.execute(bound).one();
+        BoundStatement auctionBoundStatement = getAuction.bind(auctionName);
+        Row rows = session.execute(auctionBoundStatement).one();
+
+        LOGGER.debug("Getting auction information for auction {} rows {}", auctionName, rows);
 
         BoundStatement bidsBound = getAuctionBids.bind(auctionName);
         List<BidVo> bids = session.execute(bidsBound).all().stream().map(row -> new BidVo(row.getString("bid_user"), row.getLong("bid_amount"))).collect(Collectors.toList());

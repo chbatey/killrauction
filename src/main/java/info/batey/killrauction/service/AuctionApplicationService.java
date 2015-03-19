@@ -1,17 +1,15 @@
 package info.batey.killrauction.service;
 
 import info.batey.killrauction.domain.Auction;
-import info.batey.killrauction.domain.BidVo;
 import info.batey.killrauction.infrastruture.AuctionDao;
+import info.batey.killrauction.observablespike.BidService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -21,9 +19,12 @@ public class AuctionApplicationService {
 
     private AuctionDao auctionDao;
 
+    private BidService bidService;
+
     @Inject
-    public AuctionApplicationService(AuctionDao auctionDao) {
+    public AuctionApplicationService(AuctionDao auctionDao, BidService bidService) {
         this.auctionDao = auctionDao;
+        this.bidService = bidService;
     }
 
     public Auction createAuction(String auctionName, Instant endTime) {
@@ -40,6 +41,7 @@ public class AuctionApplicationService {
 
     public void placeBid(String auctionName, String user, Long auctionBid) {
         auctionDao.placeBid(auctionName, user, auctionBid);
+        bidService.bid
     }
 
     public List<Auction> getAuctions() {

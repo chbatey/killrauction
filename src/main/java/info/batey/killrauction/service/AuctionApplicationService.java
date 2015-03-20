@@ -41,7 +41,7 @@ public class AuctionApplicationService {
 
     public void placeBid(String auctionName, String user, Long auctionBid) {
         auctionDao.placeBid(auctionName, user, auctionBid);
-        bidService.bid
+//        bidService.bid
     }
 
     public List<Auction> getAuctions() {

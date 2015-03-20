@@ -2,6 +2,7 @@ package info.batey.killrauction.service;
 
 import info.batey.killrauction.domain.Auction;
 import info.batey.killrauction.infrastruture.AuctionDao;
+import info.batey.killrauction.observablespike.BidService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,9 @@ public class AuctionApplicationServiceTest {
 
     @Mock
     private AuctionDao auctionDao;
+
+    @Mock
+    private BidService bidService;
 
     @Before
     public void setUp() throws Exception {

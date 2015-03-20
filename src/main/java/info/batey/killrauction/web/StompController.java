@@ -29,7 +29,7 @@ public class StompController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @MessageMapping("/api//oldbids")
+    @MessageMapping("/api/oldbids")
     public void handle(String bidRequestText, Principal user) throws IOException {
         BidRequest bidRequest = objectMapper.readValue(bidRequestText, BidRequest.class);
         LOGGER.debug("Bid stream request for {} by {}", bidRequest, user);

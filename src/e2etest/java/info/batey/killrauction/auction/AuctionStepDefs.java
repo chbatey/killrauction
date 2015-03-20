@@ -104,7 +104,6 @@ public class AuctionStepDefs {
     @When("^a bidstream is requested$")
     public void a_bidstream_is_requested() throws Throwable {
         bidStreamClient = new BidStreamClient(DEFAULT_AUCTION);
-        Thread.sleep(2000);
 
     }
     @And("^a new bid is made$")

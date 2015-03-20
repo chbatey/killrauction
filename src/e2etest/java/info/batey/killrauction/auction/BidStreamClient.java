@@ -23,7 +23,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -45,8 +44,9 @@ public class BidStreamClient {
         webSocketStompClient.connect("ws://localhost:8080/ws", new StompSessionHandlerAdapter() {
             @Override
             public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-
-                session.subscribe("/topic/" + auction, new StompFrameHandler() {
+                String destination = "/topic/" + auction;
+                LOGGER.debug("Connected to stomp session {} requesting topic {}", session, destination);
+                session.subscribe(destination, new StompFrameHandler() {
                     @Override
                     public Type getPayloadType(StompHeaders headers) {
                         return String.class;
@@ -65,7 +65,8 @@ public class BidStreamClient {
 
                 StompController.BidRequest bidRequest = new StompController.BidRequest(auction);
                 try {
-                    session.send("/oldbids", new ObjectMapper().writeValueAsString(bidRequest));
+                    LOGGER.debug("Sending request to oldbids");
+                    session.send("/api/oldbids", new ObjectMapper().writeValueAsString(bidRequest));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -84,7 +85,7 @@ public class BidStreamClient {
                     toReturn.add(poll);
                 }
             } catch (InterruptedException e) {
-                LOGGER.warn("Interruped while waiting for bids, exiting", e);
+                LOGGER.warn("Interrupted while waiting for bids, exiting", e);
                 Thread.currentThread().interrupt();
             }
         }

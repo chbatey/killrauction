@@ -72,9 +72,22 @@ public class BidService {
 
     public void recordBid(String auctionName, BidVo bid) {
         LOGGER.debug("Recording bid {} for auction {}", bid, auctionName);
-        this.observers.get(auctionName).onNext(bid);
+        Subject<BidVo, BidVo> bidVoBidVoSubject = this.observers.get(auctionName);
+        bidVoBidVoSubject.onNext(bid);
     }
 
+    public void addAuction(Auction auction) {
+        PublishSubject<BidVo> tPublishSubject = PublishSubject.create();
+        Subject<BidVo, BidVo> bids = new SerializedSubject<>(tPublishSubject);
+        bids.subscribe(bidVo -> {
+            try {
+                messagingTemplate.convertAndSend("/topic/" + auction.getName(), objectMapper.writeValueAsString(bidVo));
+            } catch (JsonProcessingException e) {
+                LOGGER.warn("Unable to send bid", e);
+            }
+        } );
+        observers.put(auction.getName(), bids);
+    }
     private static class AuctionObservable {
         private String name;
         private Subject<BidVo, BidVo> bids;

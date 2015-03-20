@@ -11,18 +11,18 @@ public class GlobalSteps {
 
     @Before
     public void startApp() {
-//        if (!started) {
-//            final ConfigurableApplicationContext app = SpringApplication.run(Application.class);
-//            Runtime.getRuntime().addShutdownHook(new Thread() {
-//                @Override
-//                public void run() {
-//                    app.stop();
-//                }
-//            });
-//            started = true;
-//        }
-        AuctionServiceClient.instance.reset();
         CassandraClient.instance.clearTables();
+        if (!started) {
+            final ConfigurableApplicationContext app = SpringApplication.run(Application.class);
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    app.stop();
+                }
+            });
+            started = true;
+        }
+        AuctionServiceClient.instance.reset();
     }
 
 }

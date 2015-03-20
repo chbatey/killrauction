@@ -28,8 +28,10 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
     function ($scope, $http, $routeParams, $websocket) {
 
         var auctionName = $routeParams.auction;
+        console.info("auction" + auctionName);
         $scope.auction = {};
-        $http.get("/api/auction/" + $routeParams.auction).success(function (data) {
+        $scope.bids = [];
+        $http.get("/api/auction/" + auctionName).success(function (data) {
             $scope.auction = data;
         });
 
@@ -42,11 +44,11 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function(frame) {
             console.log('Connected: ' + frame);
-            stompClient.send("/app/oldbids", {}, JSON.stringify({ 'name': name }));
+            stompClient.send("/api/oldbids", {}, JSON.stringify({ 'name': auctionName }));
             stompClient.subscribe('/topic/' + auctionName, function(bid) {
                 console.info("Received bid " + bid);
                 $scope.$apply(function() {
-                    $scope.auction.bids.push(JSON.parse(bid.body));
+                    $scope.bids.push(JSON.parse(bid.body));
                 });
             });
         });

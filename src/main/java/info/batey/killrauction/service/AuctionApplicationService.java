@@ -1,6 +1,7 @@
 package info.batey.killrauction.service;
 
 import info.batey.killrauction.domain.Auction;
+import info.batey.killrauction.domain.BidVo;
 import info.batey.killrauction.infrastruture.AuctionDao;
 import info.batey.killrauction.observablespike.BidService;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class AuctionApplicationService {
 
     public void placeBid(String auctionName, String user, Long auctionBid) {
         auctionDao.placeBid(auctionName, user, auctionBid);
-//        bidService.bid
+        bidService.recordBid(auctionName, new BidVo(user, auctionBid));
     }
 
     public List<Auction> getAuctions() {

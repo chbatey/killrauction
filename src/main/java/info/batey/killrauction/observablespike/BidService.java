@@ -1,21 +1,23 @@
 package info.batey.killrauction.observablespike;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import info.batey.killrauction.domain.Auction;
 import info.batey.killrauction.domain.BidVo;
 import info.batey.killrauction.infrastruture.AuctionDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-import rx.Observable;
-import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
@@ -26,8 +28,12 @@ public class BidService {
 
     private AuctionDao auctionDao;
 
-    private ConcurrentMap<String, Subject<BidVo, BidVo>> liveUpdates = new ConcurrentHashMap<>();
-    private ConcurrentMap<String, Observable<BidVo>> observers;
+    @Inject
+    private SimpMessagingTemplate messagingTemplate;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    private ConcurrentMap<String, Subject<BidVo, BidVo>> observers;
 
     @Inject
     public BidService(AuctionDao auctionDao) {
@@ -42,30 +48,38 @@ public class BidService {
                 .map(Optional::get)
                 .map(auction -> {
                             PublishSubject<BidVo> tPublishSubject = PublishSubject.create();
-                            Observable<BidVo> bids = new SerializedSubject<>(tPublishSubject);
+                            Subject<BidVo, BidVo> bids = new SerializedSubject<>(tPublishSubject);
                             return new AuctionObservable(auction.getName(), bids);
                         }
                 ).collect(Collectors.toConcurrentMap(AuctionObservable::getName, AuctionObservable::getBids));
-    }
 
-    public Observable<BidVo> getSubscriptionToAuction(String auctionName, Action1<BidVo> onNext) {
-        Auction auction = auctionDao.getAuction(auctionName).get();
-        PublishSubject<BidVo> tPublishSubject = PublishSubject.create();
-        Subject<BidVo, BidVo> subject = new SerializedSubject<>(tPublishSubject);
-        subject.subscribe(onNext);
-        for (BidVo bidVo : auction.getBids()) {
-            LOGGER.debug("Forwarding event {}", bidVo);
-            subject.onNext(bidVo);
+        for (Map.Entry<String, Subject<BidVo, BidVo>> stringSubjectEntry : observers.entrySet()) {
+            String auction = stringSubjectEntry.getKey();
+            stringSubjectEntry.getValue().subscribe(bidVo -> {
+                try {
+                    messagingTemplate.convertAndSend("/topic/" + auction, objectMapper.writeValueAsString(bidVo));
+                } catch (JsonProcessingException e) {
+                    LOGGER.warn("Unable to send bid", e);
+                }
+            });
         }
-
-        return subject;
     }
-    
+
+    public List<BidVo> subscribe(String auctionName) {
+        Auction auction = auctionDao.getAuction(auctionName).get();
+        return auction.getBids();
+    }
+
+    public void recordBid(String auctionName, BidVo bid) {
+        LOGGER.debug("Recording bid {} for auction {}", bid, auctionName);
+        this.observers.get(auctionName).onNext(bid);
+    }
+
     private static class AuctionObservable {
         private String name;
-        private Observable<BidVo> bids;
+        private Subject<BidVo, BidVo> bids;
 
-        public AuctionObservable(String name, Observable<BidVo> bids) {
+        public AuctionObservable(String name, Subject<BidVo, BidVo> bids) {
             this.name = name;
             this.bids = bids;
         }
@@ -74,7 +88,7 @@ public class BidService {
             return name;
         }
 
-        public Observable<BidVo> getBids() {
+        public Subject<BidVo, BidVo> getBids() {
             return bids;
         }
     }

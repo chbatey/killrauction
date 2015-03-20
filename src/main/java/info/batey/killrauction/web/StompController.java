@@ -1,20 +1,19 @@
 package info.batey.killrauction.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.batey.killrauction.domain.BidVo;
 import info.batey.killrauction.observablespike.BidService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import rx.Observable;
-import rx.functions.Action1;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class StompController {
@@ -27,27 +26,34 @@ public class StompController {
     @Inject
     private SimpMessagingTemplate messagingTemplate;
 
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @MessageMapping("/hello")
-    public void handle(BidRequest bidRequest) {
-        LOGGER.debug("Bid stream request for {}", bidRequest);
-        Action1<BidVo> onNext = bidVo -> {
-            LOGGER.debug("Sending bid {}", bidVo);
-            try {
-                messagingTemplate.convertAndSend("/topic/greetings", objectMapper.writeValueAsString(bidVo));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        };
-        Observable<BidVo> subscriptionToAuction = bidService.getSubscriptionToAuction(bidRequest.name, onNext);
-        subscriptionToAuction.subscribe(onNext);
+    @MessageMapping("/api//oldbids")
+    public void handle(String bidRequestText, Principal user) throws IOException {
+        BidRequest bidRequest = objectMapper.readValue(bidRequestText, BidRequest.class);
+        LOGGER.debug("Bid stream request for {} by {}", bidRequest, user);
+        List<BidVo> oldBids = bidService.subscribe(bidRequest.name);
 
+        LOGGER.debug("Sending old auction bids from DB: {}", bidRequest);
+
+        String destination = "/topic/" + bidRequest.name;
+        LOGGER.debug("Sending messages to {}", destination);
+        for (BidVo bidVo : oldBids) {
+            messagingTemplate.convertAndSend(destination, objectMapper.writeValueAsString(bidVo));
+        }
     }
 
-    private static class BidRequest {
+    public static class BidRequest {
         @JsonProperty
         private String name;
+
+        public BidRequest(String name) {
+            this.name = name;
+        }
+
+        public BidRequest() {
+        }
 
         @Override
         public String toString() {

@@ -9,18 +9,28 @@ import info.batey.killrauction.client.GetAuctionResponse;
 import info.batey.killrauction.domain.BidVo;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 
 public class AuctionStepDefs {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuctionStepDefs.class);
+    public static final byte[] EMPTY_PAYLOAD = new byte[0];
+    public static final String DEFAULT_AUCTION = "new_auction";
+    public static final String USERNAME = "username";
+
     private Optional<List<GetAuctionResponse>> allAuctions;
+    private BidStreamClient bidStreamClient;
 
     @Given("^the auction does not already exist$")
     public void the_auction_does_not_already_exist() throws Throwable {
@@ -28,15 +38,15 @@ public class AuctionStepDefs {
 
     @When("^a user creates an auction$")
     public void a_user_creates_an_auction() throws Throwable {
-        HttpResponse response = AuctionServiceClient.instance.createAuction("new_auction");
+        HttpResponse response = AuctionServiceClient.instance.createAuction(DEFAULT_AUCTION);
         assertEquals(201, response.getStatusLine().getStatusCode());
     }
 
     @Then("^other users can see the auction$")
     public void other_users_can_see_the_auction() throws Throwable {
-        GetAuctionResponse newAuction = AuctionServiceClient.instance.getAuction("new_auction").get();
+        GetAuctionResponse newAuction = AuctionServiceClient.instance.getAuction(DEFAULT_AUCTION).get();
         assertNotNull(newAuction);
-        assertEquals("new_auction", newAuction.getName());
+        assertEquals(DEFAULT_AUCTION, newAuction.getName());
     }
 
     @Given("^all requests are made with a valid user$")
@@ -65,7 +75,7 @@ public class AuctionStepDefs {
     public void the_bid_is_viewable_by_others() throws Throwable {
         Optional<GetAuctionResponse> bids = AuctionServiceClient.instance.getAuction("ipad");
         assertTrue("No bids returned", bids.isPresent());
-        assertThat(bids.get().getBids(), hasItems(new BidVo("username", 100l)));
+        assertThat(bids.get().getBids(), hasItems(new BidVo(USERNAME, 100l)));
     }
 
     @Given("^multiple auctions exist$")
@@ -90,5 +100,31 @@ public class AuctionStepDefs {
                 new GetAuctionResponse("one", 1, Collections.emptyList()),
                 new GetAuctionResponse("two", 1, Collections.emptyList())));
     }
+
+    @When("^a bidstream is requested$")
+    public void a_bidstream_is_requested() throws Throwable {
+        bidStreamClient = new BidStreamClient(DEFAULT_AUCTION);
+        Thread.sleep(2000);
+
+    }
+    @And("^a new bid is made$")
+    public void a_new_bid_is_made() throws Throwable {
+        AuctionServiceClient.instance.placeBid(DEFAULT_AUCTION, 101);
+        AuctionServiceClient.instance.placeBid(DEFAULT_AUCTION, 102);
+        AuctionServiceClient.instance.placeBid(DEFAULT_AUCTION, 103);
+    }
+
+    @Then("^the bidstream contains the new bid$")
+    public void the_bidstream_contains_the_new_bid() throws Throwable {
+        List<BidVo> bids = bidStreamClient.blockForMessages(3, Duration.ofSeconds(5));
+        LOGGER.debug("Received bids are {}", bids);
+        assertThat(bids.size(), equalTo(3));
+        assertThat(bids, hasItems(
+                new BidVo(USERNAME, 101l),
+                new BidVo(USERNAME, 102l),
+                new BidVo(USERNAME, 103l)
+        ));
+    }
+
 
 }

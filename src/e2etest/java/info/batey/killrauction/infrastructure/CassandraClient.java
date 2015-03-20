@@ -28,7 +28,8 @@ public class CassandraClient {
     }
 
     public void clearTables() {
-        session.execute("truncate users;");
-        session.execute("truncate auctions;");
+        session.execute("truncate users");
+        session.execute("truncate auctions");
+        session.execute("truncate auction_bids");
     }
 }

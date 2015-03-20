@@ -46,6 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic();
         http.authorizeRequests()
                 .antMatchers("/api/auction").hasRole("USER")
+                .antMatchers("/ws").hasRole("USER")
+                .antMatchers("/api/oldbids").hasRole("USER")
+                .antMatchers("/websockets.html").hasRole("USER")
                 .antMatchers("/api/user").hasAnyRole("ANONYMOUS", "USER");
 
     }

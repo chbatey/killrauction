@@ -15,14 +15,11 @@
         }
 
         function connect() {
-            var socket = new SockJS('/hello');
+            var socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/greetings', function(greeting){
-                    showGreeting(JSON.parse(greeting.body));
-                });
             });
         }
 
@@ -36,7 +33,11 @@
 
         function sendName() {
             var name = document.getElementById('name').value;
-            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+            stompClient.subscribe('/topic/' + name, function(greeting){
+                showGreeting(JSON.parse(greeting.body));
+            });
+
+            stompClient.send("/app/oldbids", {}, JSON.stringify({ 'name': name }));
         }
 
         function showGreeting(message) {

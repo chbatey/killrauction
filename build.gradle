@@ -47,6 +47,9 @@ repositories {
     maven {
         url "http://oss.jfrog.org/artifactory/oss-release-local"
     }
+    maven {
+        url "http://repo.springsource.org/snapshot"
+    }
 }
 
 project.ext.cucumberVersion = "1.2.2"
@@ -61,6 +64,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-remote-shell")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-websocket")
+    compile("org.springframework:spring-websocket:4.2.0.BUILD-SNAPSHOT")
+    compile("org.springframework:spring-messaging:4.2.0.BUILD-SNAPSHOT")
     compile("com.datastax.cassandra:cassandra-driver-core:${cassandraDriverVersion}")
     compile("com.datastax.cassandra:cassandra-driver-mapping:${cassandraDriverVersion}")
     compile("io.dropwizard.metrics:metrics-core:3.1.0")

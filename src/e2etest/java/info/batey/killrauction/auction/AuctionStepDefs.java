@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
@@ -27,7 +26,7 @@ public class AuctionStepDefs {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuctionStepDefs.class);
     public static final byte[] EMPTY_PAYLOAD = new byte[0];
     public static final String DEFAULT_AUCTION = "new_auction";
-    public static final String USERNAME = "username";
+    public static final String DEFAULT_USERNAME = "username";
 
     private Optional<List<GetAuctionResponse>> allAuctions;
     private BidStreamClient bidStreamClient;
@@ -47,6 +46,7 @@ public class AuctionStepDefs {
         GetAuctionResponse newAuction = AuctionServiceClient.instance.getAuction(DEFAULT_AUCTION).get();
         assertNotNull(newAuction);
         assertEquals(DEFAULT_AUCTION, newAuction.getName());
+        assertEquals(DEFAULT_USERNAME, newAuction.getOwner());
     }
 
     @Given("^all requests are made with a valid user$")
@@ -75,7 +75,7 @@ public class AuctionStepDefs {
     public void the_bid_is_viewable_by_others() throws Throwable {
         Optional<GetAuctionResponse> bids = AuctionServiceClient.instance.getAuction("ipad");
         assertTrue("No bids returned", bids.isPresent());
-        assertThat(bids.get().getBids(), hasItems(new BidVo(USERNAME, 100l)));
+        assertThat(bids.get().getBids(), hasItems(new BidVo(DEFAULT_USERNAME, 100l)));
     }
 
     @Given("^multiple auctions exist$")
@@ -96,9 +96,9 @@ public class AuctionStepDefs {
         List<GetAuctionResponse> getAuctionResponses = allAuctions.get();
         assertThat(getAuctionResponses.size(), equalTo(3));
         assertThat(getAuctionResponses, hasItems(
-                new GetAuctionResponse("three", 1, Collections.emptyList()),
-                new GetAuctionResponse("one", 1, Collections.emptyList()),
-                new GetAuctionResponse("two", 1, Collections.emptyList())));
+                new GetAuctionResponse("three", 1, DEFAULT_USERNAME, Collections.emptyList()),
+                new GetAuctionResponse("one", 1, DEFAULT_USERNAME, Collections.emptyList()),
+                new GetAuctionResponse("two", 1, DEFAULT_USERNAME, Collections.emptyList())));
     }
 
     @When("^a bidstream is requested$")
@@ -119,9 +119,9 @@ public class AuctionStepDefs {
         LOGGER.debug("Received bids are {}", bids);
         assertThat(bids.size(), equalTo(3));
         assertThat(bids, hasItems(
-                new BidVo(USERNAME, 101l),
-                new BidVo(USERNAME, 102l),
-                new BidVo(USERNAME, 103l)
+                new BidVo(DEFAULT_USERNAME, 101l),
+                new BidVo(DEFAULT_USERNAME, 102l),
+                new BidVo(DEFAULT_USERNAME, 103l)
         ));
     }
 

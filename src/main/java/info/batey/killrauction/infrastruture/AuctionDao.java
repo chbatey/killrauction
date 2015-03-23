@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,7 +37,7 @@ public class AuctionDao {
 
     @PostConstruct
     public void prepareStatements() {
-        createAuction = session.prepare("insert INTO auctions (name, ends ) VALUES (?, ?)");
+        createAuction = session.prepare("insert INTO auctions (name, owner, ends) VALUES (?, ?, ?)");
         getAuction = session.prepare("select * from auctions where name = ?");
         getAuctionBids = session.prepare("select * from auction_bids where name = ?");
         getAllAuctionSparse = session.prepare("select * from auctions");
@@ -47,7 +45,7 @@ public class AuctionDao {
     }
 
     public void createAuction(Auction auction) {
-        BoundStatement bound = createAuction.bind(auction.getName(), auction.getEnds().toEpochMilli());
+        BoundStatement bound = createAuction.bind(auction.getName(), auction.getOwner(), auction.getEnds().toEpochMilli());
         session.execute(bound);
     }
 
@@ -59,7 +57,7 @@ public class AuctionDao {
     public List<Auction> getAllAuctionsSparse() {
         BoundStatement bound = getAllAuctionSparse.bind();
         return session.execute(bound).all().stream().map(row ->
-                new Auction(row.getString("name"), Instant.ofEpochMilli(row.getLong("ends"))))
+                new Auction(row.getString("name"), row.getString("owner"), Instant.ofEpochMilli(row.getLong("ends"))))
                 .collect(Collectors.toList());
     }
 
@@ -67,13 +65,18 @@ public class AuctionDao {
     public Optional<Auction> getAuction(String auctionName) {
 
         BoundStatement auctionBoundStatement = getAuction.bind(auctionName);
-        Row rows = session.execute(auctionBoundStatement).one();
+        Row auction = session.execute(auctionBoundStatement).one();
 
-        LOGGER.debug("Getting auction information for auction {} rows {}", auctionName, rows);
+        LOGGER.debug("Getting auction information for auction {} rows {}", auctionName, auction);
 
         BoundStatement bidsBound = getAuctionBids.bind(auctionName);
-        List<BidVo> bids = session.execute(bidsBound).all().stream().map(row -> new BidVo(row.getString("bid_user"), row.getLong("bid_amount"))).collect(Collectors.toList());
+        List<BidVo> bids = session.execute(bidsBound).all().stream().map(row ->
+                new BidVo(row.getString("bid_user"),
+                        row.getLong("bid_amount"))).collect(Collectors.toList());
 
-        return Optional.of(new Auction(rows.getString("name"), Instant.ofEpochMilli(rows.getLong("ends")), bids));
+        return Optional.of(new Auction(auction.getString("name"),
+                Instant.ofEpochMilli(auction.getLong("ends")),
+                bids,
+                auction.getString("owner")));
     }
 }

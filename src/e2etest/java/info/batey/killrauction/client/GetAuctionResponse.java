@@ -10,11 +10,16 @@ public class GetAuctionResponse {
     private final String name;
     private final long expires;
     private final List<BidVo> bids;
+    private String owner;
 
     @JsonCreator
-    public GetAuctionResponse(@JsonProperty("name") String name, @JsonProperty("expires") long expires, @JsonProperty("bids") List<BidVo> bids) {
+    public GetAuctionResponse(@JsonProperty("name") String name,
+                              @JsonProperty("expires") long expires,
+                              @JsonProperty("owner") String owner,
+                              @JsonProperty("bids") List<BidVo> bids) {
         this.name = name;
         this.expires = expires;
+        this.owner = owner;
         this.bids = bids;
     }
 
@@ -30,12 +35,17 @@ public class GetAuctionResponse {
         return bids;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
     @Override
     public String toString() {
         return "GetAuctionResponse{" +
                 "name='" + name + '\'' +
                 ", expires=" + expires +
                 ", bids=" + bids +
+                ", owner='" + owner + '\'' +
                 '}';
     }
 
@@ -49,6 +59,7 @@ public class GetAuctionResponse {
         if (expires != that.expires) return false;
         if (bids != null ? !bids.equals(that.bids) : that.bids != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (owner != null ? !owner.equals(that.owner) : that.owner != null) return false;
 
         return true;
     }
@@ -58,6 +69,7 @@ public class GetAuctionResponse {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (int) (expires ^ (expires >>> 32));
         result = 31 * result + (bids != null ? bids.hashCode() : 0);
+        result = 31 * result + (owner != null ? owner.hashCode() : 0);
         return result;
     }
 }

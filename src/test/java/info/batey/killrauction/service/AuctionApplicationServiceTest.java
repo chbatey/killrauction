@@ -41,8 +41,9 @@ public class AuctionApplicationServiceTest {
     @Test
     public void getAuction() throws Exception {
         String auctionName = "blah";
+        String owner = "Chris";
         Instant ends = Instant.ofEpochMilli(1);
-        Optional<Auction> auction = Optional.of(new Auction(auctionName, ends));
+        Optional<Auction> auction = Optional.of(new Auction(auctionName, owner, ends));
         given(auctionDao.getAuction(auctionName)).willReturn(auction);
 
         Optional<Auction> actualAuction = underTest.getAuction(auctionName);
@@ -53,12 +54,14 @@ public class AuctionApplicationServiceTest {
     @Test
     public void createAuction() throws Exception {
         String auctionName = "blah";
+        String owner = "Chris B";
         Instant ends = Instant.ofEpochMilli(1);
 
-        Auction auction = underTest.createAuction(auctionName, ends);
+        Auction auction = underTest.createAuction(auctionName, owner, ends);
 
         verify(auctionDao).createAuction(any(Auction.class));
         assertEquals(auctionName, auction.getName());
+        assertEquals(owner, auction.getOwner());
         assertEquals(ends, auction.getEnds());
     }
 
@@ -84,8 +87,8 @@ public class AuctionApplicationServiceTest {
         List<Auction> expectedAuctions = Arrays.asList(auctionOne, auctionTwo);
         given(auctionDao.getAllAuctionsSparse()).willReturn(expectedAuctions);
 
-        List<Auction> actualAuactions = underTest.getAuctions();
+        List<Auction> actualAuctions = underTest.getAuctions();
 
-        assertSame(expectedAuctions, actualAuactions);
+        assertSame(expectedAuctions, actualAuctions);
     }
 }

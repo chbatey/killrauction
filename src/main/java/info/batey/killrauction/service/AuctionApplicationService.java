@@ -28,9 +28,9 @@ public class AuctionApplicationService {
         this.bidService = bidService;
     }
 
-    public Auction createAuction(String auctionName, Instant endTime) {
+    public Auction createAuction(String auctionName, String owner, Instant endTime) {
         LOGGER.debug("Storing auction {}", auctionName);
-        Auction auction = new Auction(auctionName, endTime);
+        Auction auction = new Auction(auctionName, owner, endTime);
         bidService.addAuction(auction);
         auctionDao.createAuction(auction);
         return auction;

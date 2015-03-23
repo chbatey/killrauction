@@ -11,9 +11,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -35,13 +38,15 @@ public class AuctionEndpointTest {
     public void shouldSendAuctionToService() throws Exception {
         //given
         String name = "name";
+        String owner = "owner";
         Instant now = Instant.now();
         long end = now.toEpochMilli();
-        AuctionDto auctionDto = new AuctionDto(name, end, Collections.emptyList());
+        Principal user = () -> owner;
+        AuctionDto auctionDto = new AuctionDto(name, null, end, Collections.emptyList());
         //when
-        underTest.create(auctionDto);
+        underTest.create(auctionDto, user);
         //then
-        verify(auctionApplicationService).createAuction(name, now);
+        verify(auctionApplicationService).createAuction(name, owner, now);
     }
 
     @Test
@@ -49,8 +54,9 @@ public class AuctionEndpointTest {
         //given
         String auctionName = "name";
         Instant now = Instant.now();
-        AuctionDto expectedAuctionDto = new AuctionDto(auctionName, now.toEpochMilli(), Collections.emptyList());
-        Optional<Auction> primedAuction = Optional.of(new Auction(auctionName, now));
+        String owner = "Chris";
+        AuctionDto expectedAuctionDto = new AuctionDto(auctionName, owner, now.toEpochMilli(), Collections.emptyList());
+        Optional<Auction> primedAuction = Optional.of(new Auction(auctionName, owner, now));
         given(auctionApplicationService.getAuction(auctionName)).willReturn(primedAuction);
         //when
         AuctionDto actualAuctionDto = underTest.get(auctionName);
@@ -68,5 +74,24 @@ public class AuctionEndpointTest {
         underTest.placeBid(auctionName, auctionBid, user);
         //then
         verify(auctionApplicationService).placeBid(auctionName, user.getName(), auctionBid.getAmount());
+    }
+
+    @Test
+    public void getAllAuctions() throws Exception {
+        //given
+        Instant now = Instant.now();
+        given(auctionApplicationService.getAuctions()).willReturn(Arrays.asList(
+            new Auction("one", "owner1", now),
+            new Auction("two", "owner2", now)
+        ));
+
+        //when
+        List<AuctionDto> actualAuctions = underTest.getAllAuction();
+
+        //then
+        assertThat(actualAuctions, hasItems(
+                new AuctionDto("one", "owner1", now.toEpochMilli(), Collections.emptyList()),
+                new AuctionDto("two", "owner2", now.toEpochMilli(), Collections.emptyList())
+        ));
     }
 }

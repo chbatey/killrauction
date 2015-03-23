@@ -28,7 +28,7 @@ public class AuctionDaoTest {
         session.execute("CREATE KEYSPACE IF NOT EXISTS killrauction_tests WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 }");
         session.execute("use killrauction_tests");
         session.execute("CREATE TABLE IF NOT EXISTS auction_bids ( name text, bid_time timeuuid, bid_user text, bid_amount bigint, primary KEY (name, bid_amount, bid_time ) ) WITH CLUSTERING ORDER BY (bid_amount DESC )");
-        session.execute("CREATE TABLE IF NOT EXISTS auctions ( name text primary key, ends bigint)");
+        session.execute("CREATE TABLE IF NOT EXISTS auctions ( name text primary key, owner text, ends bigint);");
     }
 
     @AfterClass
@@ -48,33 +48,36 @@ public class AuctionDaoTest {
 
     @Test
     public void createAndRetrieveDao() throws Exception {
-        Auction expectedAuction = new Auction("ipad", Instant.now());
+        Auction expectedAuction = new Auction("ipad", "owner", Instant.now());
 
         underTest.createAuction(expectedAuction);
         Auction actualAuction = underTest.getAuction(expectedAuction.getName()).orElseThrow(() -> new AssertionError("Expected Auction not found"));
 
         assertEquals(expectedAuction.getName(), actualAuction.getName());
+        assertEquals(expectedAuction.getOwner(), actualAuction.getOwner());
         assertEquals(expectedAuction.getEnds(), actualAuction.getEnds());
         assertEquals(expectedAuction.getBids(), actualAuction.getBids());
     }
 
     @Test
     public void getAllAuctions() throws Exception {
-        Auction ipadAuction = new Auction("ipad", Instant.now());
+        Auction ipadAuction = new Auction("ipad", "owner1", Instant.now());
         underTest.createAuction(ipadAuction);
-        Auction pcAuaction = new Auction("pc", Instant.now());
+        Auction pcAuaction = new Auction("pc", "owner2", Instant.now());
         underTest.createAuction(pcAuaction);
 
         List<Auction> allAuctionsSparse = underTest.getAllAuctionsSparse();
 
         assertEquals(2, allAuctionsSparse.size());
         assertEquals("ipad", allAuctionsSparse.get(0).getName());
+        assertEquals("owner1", allAuctionsSparse.get(0).getOwner());
         assertEquals("pc", allAuctionsSparse.get(1).getName());
+        assertEquals("owner2", allAuctionsSparse.get(1).getOwner());
     }
 
     @Test
     public void addBid() throws Exception {
-        Auction expectedAuction = new Auction("ipad", Instant.now());
+        Auction expectedAuction = new Auction("ipad", "owner1", Instant.now());
         underTest.createAuction(expectedAuction);
 
         underTest.placeBid(expectedAuction.getName(), "chbatey", 101l);
@@ -82,6 +85,7 @@ public class AuctionDaoTest {
 
         assertEquals(expectedAuction.getName(), actualAuction.getName());
         assertEquals(expectedAuction.getEnds(), actualAuction.getEnds());
+        assertEquals(expectedAuction.getOwner(), actualAuction.getOwner());
         assertEquals(Arrays.asList(new BidVo("chbatey", 101l)), actualAuction.getBids());
     }
 

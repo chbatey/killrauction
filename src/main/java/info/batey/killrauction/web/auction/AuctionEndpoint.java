@@ -37,16 +37,16 @@ public class AuctionEndpoint {
 
     @RequestMapping(value = "/api/auction", method = {RequestMethod.POST})
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody AuctionDto auctionDto) {
+    public void create(@RequestBody AuctionDto auctionDto, Principal user) {
         LOGGER.debug("Incoming auction create {}", auctionDto);
-        auctionApplicationService.createAuction(auctionDto.getName(), Instant.ofEpochMilli(auctionDto.getExpires()));
+        auctionApplicationService.createAuction(auctionDto.getName(), user.getName(), Instant.ofEpochMilli(auctionDto.getExpires()));
     }
 
     @RequestMapping(value = "/api/auction", method = {RequestMethod.GET})
     @ResponseStatus(HttpStatus.OK)
     public List<AuctionDto> getAllAuction() {
         return auctionApplicationService.getAuctions().stream()
-                .map(auction -> new AuctionDto(auction.getName(), auction.getEnds().toEpochMilli(), Collections.emptyList()))
+                .map(auction -> new AuctionDto(auction.getName(), auction.getOwner(), auction.getEnds().toEpochMilli(), Collections.emptyList()))
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +54,7 @@ public class AuctionEndpoint {
     @ResponseStatus(HttpStatus.OK)
     public AuctionDto get(@PathVariable String auctionName) {
         return auctionApplicationService.getAuction(auctionName)
-                .map(auction -> new AuctionDto(auction.getName(), auction.getEnds().toEpochMilli(), auction.getBids()))
+                .map(auction -> new AuctionDto(auction.getName(), auction.getOwner(), auction.getEnds().toEpochMilli(), auction.getBids()))
                 .orElseThrow(() -> new RuntimeException("oh dear"));
     }
 }

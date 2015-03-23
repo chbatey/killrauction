@@ -11,10 +11,15 @@ public class AuctionDto {
     private final String name;
     private final long expires;
     private final List<BidVo> bids;
+    private final String owner;
 
     @JsonCreator
-    public AuctionDto(@JsonProperty("name") String name, @JsonProperty("end") long end, @JsonProperty("bids") List<BidVo> bids) {
+    public AuctionDto(@JsonProperty("name") String name,
+                      @JsonProperty("owner") String owner,
+                      @JsonProperty("end") long end,
+                      @JsonProperty("bids") List<BidVo> bids) {
         this.name = name;
+        this.owner = owner;
         this.bids = bids;
         this.expires = end;
     }
@@ -31,6 +36,21 @@ public class AuctionDto {
         return bids;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    @Override
+    public String toString() {
+        return "AuctionDto{" +
+                "name='" + name + '\'' +
+                ", expires=" + expires +
+                ", bids=" + bids +
+                ", owner='" + owner + '\'' +
+                '}';
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -41,6 +61,7 @@ public class AuctionDto {
         if (expires != that.expires) return false;
         if (bids != null ? !bids.equals(that.bids) : that.bids != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (owner != null ? !owner.equals(that.owner) : that.owner != null) return false;
 
         return true;
     }
@@ -50,15 +71,7 @@ public class AuctionDto {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (int) (expires ^ (expires >>> 32));
         result = 31 * result + (bids != null ? bids.hashCode() : 0);
+        result = 31 * result + (owner != null ? owner.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "AuctionDto{" +
-                "name='" + name + '\'' +
-                ", expires=" + expires +
-                ", bids=" + bids +
-                '}';
     }
 }

@@ -8,20 +8,20 @@
         <input type="submit" id="bid" value="Bid" class="btn btn-default"/>
     </form>
 </div>
-<section ng-init="tab = 0">
+<section ng-controller="AuctionViewPanelController as panel">
     <ul class="nav nav-pills">
-        <li ng-class="{ active:tab === 0}"><a href ng-click="tab = 0">Description</a></li>
-        <li ng-class="{ active:tab === 1}"><a href ng-click="tab = 1">Bids</a></li>
+        <li ng-class="{ active: panel.isSelected(0) }"><a href ng-click="panel.selectTab(0)">Description</a></li>
+        <li ng-class="{ active: panel.isSelected(1) }"><a href ng-click="panel.selectTab(1)">Bids</a></li>
     </ul>
 
-    <div class="panel" ng-show="tab === 0">
-        <h4>Description</h4>
-        <p>Seller: {{ auction.owner }}</p>
-        <p>Expires: {{ auction.expires | date:'dd/MM/yyyy @ h:mma' }}</p>
+    <div class="panel" ng-show="panel.isSelected(0)">
+        <h3>Description</h3>
+        <h4>Seller: {{ auction.owner }}</h4>
+        <h4>Expires: {{ auction.expires | date:'dd/MM/yyyy @ h:mma' }}</h4>
         <p>I should probably add a description</p>
     </div>
 
-    <div class="panel" ng-show="tab === 1">
+    <div class="panel" ng-show="panel.isSelected(1)">
         <h4>Bids</h4>
         <table ng-table="tableParams" class="table">
             <tr ng-repeat="bid in bids | orderBy:'-amount'">

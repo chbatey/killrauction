@@ -61,7 +61,6 @@ public class AuctionDao {
                 .collect(Collectors.toList());
     }
 
-    //todo make these async
     public Optional<Auction> getAuction(String auctionName) {
 
         BoundStatement auctionBoundStatement = getAuction.bind(auctionName);

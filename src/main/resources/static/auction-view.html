@@ -1,6 +1,4 @@
 <h2>Auction: {{ auction.name }}</h2>
-<p>Seller: {{ auction.owner }}</p>
-<p>Expires: {{ auctionEndDate }}</p>
 <div class="container">
     <form ng-submit="submit()" role="form">
         <div class="form-group">
@@ -10,13 +8,30 @@
         <input type="submit" id="bid" value="Bid" class="btn btn-default"/>
     </form>
 </div>
-<table ng-table="tableParams"  class="table">
-    <tr ng-repeat="bid in bids">
-        <td data-title="'User'" >
-            {{bid.user}}
-        </td>
-        <td data-title="'Bid'">
-            {{bid.amount}}
-        </td>
-    </tr>
-</table>
+<section ng-init="tab = 0">
+    <ul class="nav nav-pills">
+        <li ng-class="{ active:tab === 0}"><a href ng-click="tab = 0">Description</a></li>
+        <li ng-class="{ active:tab === 1}"><a href ng-click="tab = 1">Bids</a></li>
+    </ul>
+
+    <div class="panel" ng-show="tab === 0">
+        <h4>Description</h4>
+        <p>Seller: {{ auction.owner }}</p>
+        <p>Expires: {{ auction.expires | date:'dd/MM/yyyy @ h:mma' }}</p>
+        <p>I should probably add a description</p>
+    </div>
+
+    <div class="panel" ng-show="tab === 1">
+        <h4>Bids</h4>
+        <table ng-table="tableParams" class="table">
+            <tr ng-repeat="bid in bids | orderBy:'-amount'">
+                <td data-title="'User'">
+                    {{bid.user}}
+                </td>
+                <td data-title="'Bid'">
+                    {{bid.amount | currency}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</section>

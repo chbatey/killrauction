@@ -10,7 +10,6 @@ auctionControllers.controller('AuctionListController', ['$scope', '$http', 'ngTa
                 total: data.length,
                 getData: function ($defer, params) {
                     $defer.resolve(data.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                    console.info(data);
                     $scope.auctions = data;
                 }
             });
@@ -26,8 +25,8 @@ auctionControllers.controller('AuctionCreationController', ['$scope', '$http',
         };
     }]);
 
-auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$routeParams', 'ngTableParams', '$filter',
+    function ($scope, $http, $routeParams, ngTableParams, $filter) {
 
         var auctionName = $routeParams.auction;
         console.info("auction" + auctionName);
@@ -35,6 +34,20 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
         $scope.bids = [];
         $http.get("/api/auction/" + auctionName).success(function (data) {
             $scope.auction = data;
+            $scope.tableParams = new ngTableParams({
+                page: 1,
+                count: 10
+            }, {
+                total: 0,
+                getData: function ($defer, params) {
+                    params.total($scope.bids.length); 
+                    var orderedData = $filter('orderBy')($scope.bids, "-amount");
+                    var pageOfBids = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                    $defer.resolve(pageOfBids);
+                    $scope.filteredBids = pageOfBids;
+                }
+            });
+
         });
 
         $scope.submit = function () {
@@ -48,10 +61,8 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
             console.log('Connected: ' + frame);
             stompClient.send("/api/oldbids", {}, JSON.stringify({ 'name': auctionName }));
             stompClient.subscribe('/topic/' + auctionName, function(bid) {
-                console.info("Received bid " + bid);
-                $scope.$apply(function() {
-                    $scope.bids.push(JSON.parse(bid.body));
-                });
+                $scope.bids.push(JSON.parse(bid.body));
+                $scope.tableParams.reload();
             });
         });
 

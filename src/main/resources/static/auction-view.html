@@ -24,7 +24,7 @@
     <div class="panel" ng-show="panel.isSelected(1)">
         <h4>Bids</h4>
         <table ng-table="tableParams" class="table">
-            <tr ng-repeat="bid in bids | orderBy:'-amount'">
+            <tr ng-repeat="bid in filteredBids">
                 <td data-title="'User'">
                     {{bid.user}}
                 </td>

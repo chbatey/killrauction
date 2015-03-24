@@ -3,7 +3,6 @@
 /* App Module */
 
 var weatherApp = angular.module('killrAuction', [
-    'ngWebsocket',
     'ngRoute',
     'ngTable',
     'auctionControllers',
@@ -25,11 +24,11 @@ weatherApp.config(['$routeProvider',
                 templateUrl: 'auction-view.html',
                 controller: 'AuctionViewController'
             }).
-            when('/user', {
+            when('/register', {
                 templateUrl: 'user-create.html',
                 controller: 'UserCreationController'
             }).
             otherwise({
-                redirectTo: '/user'
+                redirectTo: '/register'
             });
     }]);

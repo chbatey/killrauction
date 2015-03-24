@@ -10,7 +10,13 @@ auctionControllers.controller('AuctionListController', ['$scope', '$http', 'ngTa
                 total: data.length,
                 getData: function ($defer, params) {
                     $defer.resolve(data.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                    $scope.auctions = data
+                    console.info(data);
+                    var newAuctions = data.map( function(auction) {
+                        auction.expiresFormat = Date(auction.expires);
+                        return auction;
+                    });
+                    console.info(newAuctions);
+                    $scope.auctions = newAuctions;
                 }
             });
         });
@@ -25,8 +31,8 @@ auctionControllers.controller('AuctionCreationController', ['$scope', '$http',
         };
     }]);
 
-auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$routeParams', '$websocket',
-    function ($scope, $http, $routeParams, $websocket) {
+auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
 
         var auctionName = $routeParams.auction;
         console.info("auction" + auctionName);
@@ -34,6 +40,7 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
         $scope.bids = [];
         $http.get("/api/auction/" + auctionName).success(function (data) {
             $scope.auction = data;
+            $scope.auctionEndDate = Date(data.expires)
         });
 
         $scope.submit = function () {

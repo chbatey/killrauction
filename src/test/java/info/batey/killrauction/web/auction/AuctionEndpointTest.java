@@ -11,10 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.*;
@@ -42,7 +39,7 @@ public class AuctionEndpointTest {
         Instant now = Instant.now();
         long end = now.toEpochMilli();
         Principal user = () -> owner;
-        AuctionDto auctionDto = new AuctionDto(name, null, end, Collections.emptyList());
+        AuctionDto auctionDto = new AuctionDto(name, null, new Date(end), Collections.emptyList());
         //when
         underTest.create(auctionDto, user);
         //then
@@ -55,7 +52,7 @@ public class AuctionEndpointTest {
         String auctionName = "name";
         Instant now = Instant.now();
         String owner = "Chris";
-        AuctionDto expectedAuctionDto = new AuctionDto(auctionName, owner, now.toEpochMilli(), Collections.emptyList());
+        AuctionDto expectedAuctionDto = new AuctionDto(auctionName, owner, new Date(now.toEpochMilli()), Collections.emptyList());
         Optional<Auction> primedAuction = Optional.of(new Auction(auctionName, owner, now));
         given(auctionApplicationService.getAuction(auctionName)).willReturn(primedAuction);
         //when
@@ -90,8 +87,8 @@ public class AuctionEndpointTest {
 
         //then
         assertThat(actualAuctions, hasItems(
-                new AuctionDto("one", "owner1", now.toEpochMilli(), Collections.emptyList()),
-                new AuctionDto("two", "owner2", now.toEpochMilli(), Collections.emptyList())
+                new AuctionDto("one", "owner1", new Date(now.toEpochMilli()), Collections.emptyList()),
+                new AuctionDto("two", "owner2", new Date(now.toEpochMilli()), Collections.emptyList())
         ));
     }
 }

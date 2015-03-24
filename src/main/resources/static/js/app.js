@@ -6,8 +6,10 @@ var weatherApp = angular.module('killrAuction', [
     'ngWebsocket',
     'ngRoute',
     'ngTable',
-    'auctionControllers'
-])
+    'auctionControllers',
+    'ui.bootstrap.datetimepicker'
+]);
+
 weatherApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.

@@ -8,6 +8,9 @@
     "ng-websocket": "~0.2.0",
     "ng-table": "~0.3.1",
     "sockjs-client": "latest",
-    "stomp-websocket": "latest"
+    "stomp-websocket": "latest",
+    "eonasdan-bootstrap-datetimepicker": "latest",
+    "angular-bootstrap-datetimepicker": "latest"
+
   }
 }

@@ -19,6 +19,7 @@ auctionControllers.controller('AuctionListController', ['$scope', '$http', 'ngTa
 auctionControllers.controller('AuctionCreationController', ['$scope', '$http',
     function ($scope, $http) {
         $scope.submit = function () {
+            console.info(JSON.stringify($scope.auction));
             $http.post("/api/auction", $scope.auction);
             $scope.auction = {};
         };

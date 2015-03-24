@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,7 @@ public class AuctionEndpoint {
     @ResponseStatus(HttpStatus.OK)
     public List<AuctionDto> getAllAuction() {
         return auctionApplicationService.getAuctions().stream()
-                .map(auction -> new AuctionDto(auction.getName(), auction.getOwner(), auction.getEnds().toEpochMilli(), Collections.emptyList()))
+                .map(auction -> new AuctionDto(auction.getName(), auction.getOwner(), new Date(auction.getEnds().toEpochMilli()), Collections.emptyList()))
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +55,7 @@ public class AuctionEndpoint {
     @ResponseStatus(HttpStatus.OK)
     public AuctionDto get(@PathVariable String auctionName) {
         return auctionApplicationService.getAuction(auctionName)
-                .map(auction -> new AuctionDto(auction.getName(), auction.getOwner(), auction.getEnds().toEpochMilli(), auction.getBids()))
+                .map(auction -> new AuctionDto(auction.getName(), auction.getOwner(), new Date(auction.getEnds().toEpochMilli()), auction.getBids()))
                 .orElseThrow(() -> new RuntimeException("oh dear"));
     }
 }

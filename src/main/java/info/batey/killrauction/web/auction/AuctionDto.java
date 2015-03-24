@@ -4,19 +4,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import info.batey.killrauction.domain.BidVo;
 
+import java.util.Date;
 import java.util.List;
 
 public class AuctionDto {
 
     private final String name;
-    private final long expires;
+    private final Date expires;
     private final List<BidVo> bids;
     private final String owner;
 
     @JsonCreator
     public AuctionDto(@JsonProperty("name") String name,
                       @JsonProperty("owner") String owner,
-                      @JsonProperty("end") long end,
+                      @JsonProperty("end") Date end,
                       @JsonProperty("bids") List<BidVo> bids) {
         this.name = name;
         this.owner = owner;
@@ -29,7 +30,7 @@ public class AuctionDto {
     }
 
     public long getExpires() {
-        return expires;
+        return expires.getTime();
     }
 
     public List<BidVo> getBids() {
@@ -58,8 +59,8 @@ public class AuctionDto {
 
         AuctionDto that = (AuctionDto) o;
 
-        if (expires != that.expires) return false;
         if (bids != null ? !bids.equals(that.bids) : that.bids != null) return false;
+        if (expires != null ? !expires.equals(that.expires) : that.expires != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (owner != null ? !owner.equals(that.owner) : that.owner != null) return false;
 
@@ -69,7 +70,7 @@ public class AuctionDto {
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (int) (expires ^ (expires >>> 32));
+        result = 31 * result + (expires != null ? expires.hashCode() : 0);
         result = 31 * result + (bids != null ? bids.hashCode() : 0);
         result = 31 * result + (owner != null ? owner.hashCode() : 0);
         return result;

@@ -1,5 +1,5 @@
 <h2>Auction: {{ auction.name }}</h2>
-<section ng-controller="AuctionViewPanelController as panel">
+<section ng-controller="AuctionViewController as panel">
     <ul class="nav nav-pills">
         <li ng-class="{ active: panel.isSelected(0) }"><a href ng-click="panel.selectTab(0)">Description</a></li>
         <li ng-class="{ active: panel.isSelected(1) }"><a href ng-click="panel.selectTab(1)">Bids</a></li>
@@ -9,6 +9,7 @@
         <h3>Description</h3>
         <h4>Seller: {{ auction.owner }}</h4>
         <h4>Expires: {{ auction.expires | date:'dd/MM/yyyy @ h:mma' }}</h4>
+
         <p>I should probably add a description</p>
     </div>
 
@@ -30,7 +31,7 @@
                     {{bid.user}}
                 </td>
                 <td data-title="'Bid'">
-                    {{bid.amount | currency}}
+                    {{bid.amount / 100 | currency}}
                 </td>
             </tr>
         </table>

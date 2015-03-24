@@ -27,6 +27,13 @@ auctionControllers.controller('AuctionCreationController', ['$scope', '$http',
 
 auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$routeParams', 'ngTableParams', '$filter',
     function ($scope, $http, $routeParams, ngTableParams, $filter) {
+        this.tab = 0;
+        this.selectTab = function(setTab) {
+            this.tab = setTab;
+        };
+        this.isSelected = function(checkTab) {
+            return this.tab == checkTab;
+        };
 
         var auctionName = $routeParams.auction;
         console.info("auction" + auctionName);
@@ -51,6 +58,7 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
         });
 
         $scope.submit = function () {
+            console.info($scope.bid)
             $http.post("/api/auction/"  + auctionName + "/bid", {name: auctionName, amount: $scope.bid.price} );
             $scope.bid = {};
         };
@@ -78,11 +86,5 @@ auctionControllers.controller('UserCreationController', ['$scope', '$http',
     }]);
 
 auctionControllers.controller('AuctionViewPanelController', function() {
-    this.tab = 0;
-    this.selectTab = function(setTab) {
-        this.tab = setTab;
-    };
-    this.isSelected = function(checkTab) {
-        return this.tab == checkTab;
-    };
+
 });

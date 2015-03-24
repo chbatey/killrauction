@@ -40,7 +40,7 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
             }, {
                 total: 0,
                 getData: function ($defer, params) {
-                    params.total($scope.bids.length); 
+                    params.total($scope.bids.length);
                     var orderedData = $filter('orderBy')($scope.bids, "-amount");
                     var pageOfBids = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
                     $defer.resolve(pageOfBids);

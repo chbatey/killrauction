@@ -1,13 +1,4 @@
 <h2>Auction: {{ auction.name }}</h2>
-<div class="container">
-    <form ng-submit="submit()" role="form">
-        <div class="form-group">
-            <label for="price">Price</label>
-            <input type="text" ng-model="bid.price" id="price" class="form-control"/>
-        </div>
-        <input type="submit" id="bid" value="Bid" class="btn btn-default"/>
-    </form>
-</div>
 <section ng-controller="AuctionViewPanelController as panel">
     <ul class="nav nav-pills">
         <li ng-class="{ active: panel.isSelected(0) }"><a href ng-click="panel.selectTab(0)">Description</a></li>
@@ -22,6 +13,16 @@
     </div>
 
     <div class="panel" ng-show="panel.isSelected(1)">
+        <div class="container">
+            <form ng-submit="submit()" role="form">
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="text" ng-model="bid.price" id="price" class="form-control"/>
+                </div>
+                <input type="submit" id="bid" value="Bid" class="btn btn-default"/>
+            </form>
+        </div>
+
         <h4>Bids</h4>
         <table ng-table="tableParams" class="table">
             <tr ng-repeat="bid in filteredBids">

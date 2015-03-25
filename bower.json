@@ -8,6 +8,7 @@
     "ng-table": "~0.3.1",
     "sockjs-client": "latest",
     "stomp-websocket": "latest",
-    "angular-bootstrap-datetimepicker": "latest"
+    "angular-bootstrap-datetimepicker": "latest",
+    "ng-file-upload": "latest"
   }
 }

@@ -58,7 +58,7 @@ auctionControllers.controller('AuctionViewController', ['$scope', '$http', '$rou
         });
 
         $scope.submit = function () {
-            console.info($scope.bid)
+            console.info("Submitting bid" + $scope.bid);
             $http.post("/api/auction/"  + auctionName + "/bid", {name: auctionName, amount: $scope.bid.price} );
             $scope.bid = {};
         };

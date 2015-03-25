@@ -2,6 +2,7 @@ package info.batey.killrauction.infrastruture;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.utils.UUIDs;
 import info.batey.killrauction.domain.Auction;
 import info.batey.killrauction.domain.BidVo;
 import org.junit.AfterClass;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,7 +35,7 @@ public class AuctionDaoTest {
 
     @AfterClass
     public static void shutdown() throws Exception {
-        session.execute("drop keyspace killrauction_tests");
+//        session.execute("drop keyspace killrauction_tests");
         session.close();
         cluster.close();
     }
@@ -77,16 +79,17 @@ public class AuctionDaoTest {
 
     @Test
     public void addBid() throws Exception {
-        Auction expectedAuction = new Auction("ipad", "owner1", Instant.now());
+        Instant now = Instant.now();
+        Auction expectedAuction = new Auction("ipad", "owner1", now);
         underTest.createAuction(expectedAuction);
 
-        underTest.placeBid(expectedAuction.getName(), "chbatey", 101l);
+        UUID uuid = underTest.placeBid(expectedAuction.getName(), "chbatey", 101l);
         Auction actualAuction = underTest.getAuction(expectedAuction.getName()).orElseThrow(() -> new AssertionError("Expected Auction not found"));
 
         assertEquals(expectedAuction.getName(), actualAuction.getName());
         assertEquals(expectedAuction.getEnds(), actualAuction.getEnds());
         assertEquals(expectedAuction.getOwner(), actualAuction.getOwner());
-        assertEquals(Arrays.asList(new BidVo("chbatey", 101l)), actualAuction.getBids());
+        assertEquals(Arrays.asList(new BidVo("chbatey", 101l, Instant.ofEpochMilli(UUIDs.unixTimestamp(uuid)))), actualAuction.getBids());
     }
 
     //todo: bid for a user that does not exist

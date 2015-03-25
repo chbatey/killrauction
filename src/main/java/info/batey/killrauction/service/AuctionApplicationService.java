@@ -1,17 +1,21 @@
 package info.batey.killrauction.service;
 
+import com.datastax.driver.core.utils.UUIDs;
 import info.batey.killrauction.domain.Auction;
 import info.batey.killrauction.domain.BidVo;
 import info.batey.killrauction.infrastruture.AuctionDao;
 import info.batey.killrauction.observablespike.BidService;
+import org.joda.time.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.time.Instant;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class AuctionApplicationService {
@@ -42,8 +46,9 @@ public class AuctionApplicationService {
     }
 
     public void placeBid(String auctionName, String user, Long auctionBid) {
-        auctionDao.placeBid(auctionName, user, auctionBid);
-        bidService.recordBid(auctionName, new BidVo(user, auctionBid));
+        UUID uuid = auctionDao.placeBid(auctionName, user, auctionBid);
+        //todo: convert from 1952 to 1970 epoch
+        bidService.recordBid(auctionName, new BidVo(user, auctionBid, Instant.ofEpochMilli(UUIDs.unixTimestamp(uuid))));
     }
 
     public List<Auction> getAuctions() {

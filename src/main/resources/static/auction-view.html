@@ -33,6 +33,9 @@
                 <td data-title="'Bid'">
                     {{bid.amount / 100 | currency}}
                 </td>
+                <td data-title="'Time'">
+                    {{bid.date.epochSecond * 1000 | date:'dd/MM/yyyy @ h:mma'}}
+                </td>
             </tr>
         </table>
     </div>

@@ -1,11 +1,15 @@
 package info.batey.killrauction.service;
 
+import com.datastax.driver.core.utils.UUIDs;
 import info.batey.killrauction.domain.Auction;
+import info.batey.killrauction.domain.BidVo;
 import info.batey.killrauction.infrastruture.AuctionDao;
 import info.batey.killrauction.observablespike.BidService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -13,12 +17,12 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -26,6 +30,9 @@ import static org.mockito.Mockito.verify;
 public class AuctionApplicationServiceTest {
 
     private AuctionApplicationService underTest;
+
+    @Captor
+    private ArgumentCaptor<BidVo> capture;
 
     @Mock
     private AuctionDao auctionDao;
@@ -74,10 +81,17 @@ public class AuctionApplicationServiceTest {
     @Test
     public void recordsBid() throws Exception {
         String auctionName = "blah";
+        UUID timeBased = UUIDs.timeBased();
+        given(auctionDao.placeBid(anyString(), anyString(), anyLong())).willReturn(timeBased);
 
         underTest.placeBid(auctionName, "user", 100l);
 
         verify(auctionDao).placeBid(auctionName, "user", 100l);
+        verify(bidService).recordBid(eq(auctionName), capture.capture());
+        BidVo actualBidVo = capture.getValue();
+        assertEquals("user", actualBidVo.getUser());
+        assertEquals(new Long(100l), actualBidVo.getAmount());
+        assertEquals(Instant.ofEpochMilli(UUIDs.unixTimestamp(timeBased)), actualBidVo.getDate());
     }
 
     @Test

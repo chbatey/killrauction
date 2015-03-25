@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -49,9 +50,11 @@ public class AuctionDao {
         session.execute(bound);
     }
 
-    public void placeBid(String auctionName, String user, Long amount) {
-        BoundStatement bound = storeBid.bind(auctionName, UUIDs.timeBased(), amount, user);
+    public UUID placeBid(String auctionName, String user, Long amount) {
+        UUID uuid = UUIDs.timeBased();
+        BoundStatement bound = storeBid.bind(auctionName, uuid, amount, user);
         session.execute(bound);
+        return uuid;
     }
 
     public List<Auction> getAllAuctionsSparse() {
@@ -71,7 +74,9 @@ public class AuctionDao {
         BoundStatement bidsBound = getAuctionBids.bind(auctionName);
         List<BidVo> bids = session.execute(bidsBound).all().stream().map(row ->
                 new BidVo(row.getString("bid_user"),
-                        row.getLong("bid_amount"))).collect(Collectors.toList());
+                        row.getLong("bid_amount"),
+                        Instant.ofEpochMilli(UUIDs.unixTimestamp(row.getUUID("bid_time")))))
+                .collect(Collectors.toList());
 
         return Optional.of(new Auction(auction.getString("name"),
                 Instant.ofEpochMilli(auction.getLong("ends")),

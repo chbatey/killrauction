@@ -75,7 +75,7 @@ public class AuctionStepDefs {
     public void the_bid_is_viewable_by_others() throws Throwable {
         Optional<GetAuctionResponse> bids = AuctionServiceClient.instance.getAuction("ipad");
         assertTrue("No bids returned", bids.isPresent());
-        assertThat(bids.get().getBids(), hasItems(new BidVo(DEFAULT_USERNAME, 100l)));
+        assertThat(bids.get().getBids(), hasItems(new BidVo(DEFAULT_USERNAME, 100l, null)));
     }
 
     @Given("^multiple auctions exist$")
@@ -119,9 +119,9 @@ public class AuctionStepDefs {
         LOGGER.debug("Received bids are {}", bids);
         assertThat(bids.size(), equalTo(3));
         assertThat(bids, hasItems(
-                new BidVo(DEFAULT_USERNAME, 101l),
-                new BidVo(DEFAULT_USERNAME, 102l),
-                new BidVo(DEFAULT_USERNAME, 103l)
+                new BidVo(DEFAULT_USERNAME, 101l, null),
+                new BidVo(DEFAULT_USERNAME, 102l, null),
+                new BidVo(DEFAULT_USERNAME, 103l, null)
         ));
     }
 

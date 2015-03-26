@@ -4,19 +4,21 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import info.batey.killrauction.domain.BidVo;
 
+import java.time.Instant;
 import java.util.List;
 
 public class GetAuctionResponse {
     private final String name;
     private final long expires;
     private final List<BidVo> bids;
-    private String owner;
+    private final String owner;
 
     @JsonCreator
     public GetAuctionResponse(@JsonProperty("name") String name,
                               @JsonProperty("expires") long expires,
                               @JsonProperty("owner") String owner,
-                              @JsonProperty("bids") List<BidVo> bids) {
+                              @JsonProperty("bids") List<BidVo> bids
+                              ) {
         this.name = name;
         this.expires = expires;
         this.owner = owner;
@@ -39,15 +41,6 @@ public class GetAuctionResponse {
         return owner;
     }
 
-    @Override
-    public String toString() {
-        return "GetAuctionResponse{" +
-                "name='" + name + '\'' +
-                ", expires=" + expires +
-                ", bids=" + bids +
-                ", owner='" + owner + '\'' +
-                '}';
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -71,5 +64,15 @@ public class GetAuctionResponse {
         result = 31 * result + (bids != null ? bids.hashCode() : 0);
         result = 31 * result + (owner != null ? owner.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "GetAuctionResponse{" +
+                "name='" + name + '\'' +
+                ", expires=" + expires +
+                ", bids=" + bids +
+                ", owner='" + owner + '\'' +
+                '}';
     }
 }

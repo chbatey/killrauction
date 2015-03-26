@@ -9,12 +9,12 @@ public class BidVo {
 
     private final String user;
     private final Long amount;
-    private final Instant time;
+    private final Long time;
 
     @JsonCreator
     public BidVo(@JsonProperty("user") String user,
                  @JsonProperty("amount") Long amount,
-                 @JsonProperty("time") Instant time) {
+                 @JsonProperty("time") Long time) {
         this.user = user;
         this.amount = amount;
         this.time = time;
@@ -27,11 +27,9 @@ public class BidVo {
     public Long getAmount() {
         return amount;
     }
-
-    public Instant getDate() {
+    public Long getTime() {
         return time;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

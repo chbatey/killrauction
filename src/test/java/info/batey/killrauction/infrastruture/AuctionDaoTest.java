@@ -89,7 +89,7 @@ public class AuctionDaoTest {
         assertEquals(expectedAuction.getName(), actualAuction.getName());
         assertEquals(expectedAuction.getEnds(), actualAuction.getEnds());
         assertEquals(expectedAuction.getOwner(), actualAuction.getOwner());
-        assertEquals(Arrays.asList(new BidVo("chbatey", 101l, Instant.ofEpochMilli(UUIDs.unixTimestamp(uuid)))), actualAuction.getBids());
+        assertEquals(Arrays.asList(new BidVo("chbatey", 101l, UUIDs.unixTimestamp(uuid))), actualAuction.getBids());
     }
 
     //todo: bid for a user that does not exist

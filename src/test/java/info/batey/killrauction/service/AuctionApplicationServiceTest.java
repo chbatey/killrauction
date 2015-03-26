@@ -91,7 +91,7 @@ public class AuctionApplicationServiceTest {
         BidVo actualBidVo = capture.getValue();
         assertEquals("user", actualBidVo.getUser());
         assertEquals(new Long(100l), actualBidVo.getAmount());
-        assertEquals(Instant.ofEpochMilli(UUIDs.unixTimestamp(timeBased)), actualBidVo.getDate());
+        assertEquals(UUIDs.unixTimestamp(timeBased), actualBidVo.getTime().longValue());
     }
 
     @Test

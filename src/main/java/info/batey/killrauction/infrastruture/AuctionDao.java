@@ -75,7 +75,7 @@ public class AuctionDao {
         List<BidVo> bids = session.execute(bidsBound).all().stream().map(row ->
                 new BidVo(row.getString("bid_user"),
                         row.getLong("bid_amount"),
-                        Instant.ofEpochMilli(UUIDs.unixTimestamp(row.getUUID("bid_time")))))
+                        UUIDs.unixTimestamp(row.getUUID("bid_time"))))
                 .collect(Collectors.toList());
 
         return Optional.of(new Auction(auction.getString("name"),

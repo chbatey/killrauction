@@ -58,9 +58,9 @@ project.ext.cassandraDriverVersion = "2.1.4"
 project.ext.gatlingVersion = "2.1.4"
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-jersey")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.boot:spring-boot-starter-remote-shell")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-websocket")
@@ -75,6 +75,7 @@ dependencies {
     compile("org.ajar:swagger-spring-mvc-ui:0.4")
     compile('io.reactivex:rxjava:1.0.8')
 
+    // unit + acceptance testing
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("info.cukes:cucumber-junit:${cucumberVersion}")
     testCompile("info.cukes:cucumber-spring:${cucumberVersion}")
@@ -85,7 +86,6 @@ dependencies {
     testCompile "org.scala-lang:scala-library:2.11.5"
     testCompile "io.gatling:gatling-app:${gatlingVersion}"
     testCompile "io.gatling.highcharts:gatling-charts-highcharts:${gatlingVersion}"
-
 }
 
 task wrapper(type: Wrapper) {

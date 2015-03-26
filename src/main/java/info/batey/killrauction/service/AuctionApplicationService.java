@@ -48,7 +48,7 @@ public class AuctionApplicationService {
     public void placeBid(String auctionName, String user, Long auctionBid) {
         UUID uuid = auctionDao.placeBid(auctionName, user, auctionBid);
         //todo: convert from 1952 to 1970 epoch
-        bidService.recordBid(auctionName, new BidVo(user, auctionBid, Instant.ofEpochMilli(UUIDs.unixTimestamp(uuid))));
+        bidService.recordBid(auctionName, new BidVo(user, auctionBid, UUIDs.unixTimestamp(uuid)));
     }
 
     public List<Auction> getAuctions() {

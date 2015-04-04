@@ -33,7 +33,9 @@ class FullWorkloadSimulation extends Simulation {
     .header("Content-Type", "application/json")
     .basicAuth(user, password)).pause(500 milliseconds)
 
-  val sellerScenario = scenario("Seller").exec(createUser(seller)).exec(createAuction(auctionName, seller, password))
+  val sellerScenario = scenario("Seller")
+      .exec(createUser(seller))
+      .exec(createAuction(auctionName, seller, password))
 
   val buyer = scenario("Buyer one")
     .exec(createUser(buyerOne))

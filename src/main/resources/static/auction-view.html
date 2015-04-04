@@ -1,42 +1,49 @@
-<h2>Auction: {{ auction.name }}</h2>
-<section ng-controller="AuctionViewController as panel">
-    <ul class="nav nav-pills">
-        <li ng-class="{ active: panel.isSelected(0) }"><a href ng-click="panel.selectTab(0)">Description</a></li>
-        <li ng-class="{ active: panel.isSelected(1) }"><a href ng-click="panel.selectTab(1)">Bids</a></li>
-    </ul>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 col-md-offset-1">
+            <h2>Auction: {{ auction.name }}</h2>
+            <section ng-controller="AuctionViewController as panel">
+                <ul class="nav nav-pills">
+                    <li ng-class="{ active: panel.isSelected(0) }"><a href ng-click="panel.selectTab(0)">Description</a>
+                    </li>
+                    <li ng-class="{ active: panel.isSelected(1) }"><a href ng-click="panel.selectTab(1)">Bids</a></li>
+                </ul>
 
-    <div class="panel" ng-show="panel.isSelected(0)">
-        <h3>Description</h3>
-        <h4>Seller: {{ auction.owner }}</h4>
-        <h4>Expires: {{ auction.expires | date:'dd/MM/yyyy @ h:mma' }}</h4>
+                <div class="panel" ng-show="panel.isSelected(0)">
+                    <h3>Description</h3>
+                    <h4>Seller: {{ auction.owner }}</h4>
+                    <h4>Expires: {{ auction.expires | date:'dd/MM/yyyy @ h:mma' }}</h4>
 
-        <p>I should probably add a description</p>
-    </div>
-
-    <div class="panel" ng-show="panel.isSelected(1)">
-        <div class="container">
-            <form ng-submit="submit()" role="form">
-                <div class="form-group">
-                    <label for="price">Price</label>
-                    <input type="text" ng-model="bid.price" id="price" class="form-control"/>
+                    <p>I should probably add a description</p>
                 </div>
-                <input type="submit" id="bid" value="Bid" class="btn btn-default"/>
-            </form>
-        </div>
 
-        <h4>Bids</h4>
-        <table ng-table="tableParams" class="table">
-            <tr ng-repeat="bid in filteredBids">
-                <td data-title="'User'">
-                    {{bid.user}}
-                </td>
-                <td data-title="'Bid'">
-                    {{bid.amount / 100 | currency}}
-                </td>
-                <td data-title="'Time'">
-                    {{bid.time.epochSecond * 1000 | date:'dd/MM/yyyy @ h:mma'}}
-                </td>
-            </tr>
-        </table>
+                <div class="panel" ng-show="panel.isSelected(1)">
+                    <div class="container">
+                        <form ng-submit="submit()" role="form">
+                            <div class="form-group">
+                                <label for="price">Price</label>
+                                <input type="text" ng-model="bid.price" id="price" class="form-control"/>
+                            </div>
+                            <input type="submit" id="bid" value="Bid" class="btn btn-default"/>
+                        </form>
+                    </div>
+
+                    <h4>Bids</h4>
+                    <table ng-table="tableParams" class="table">
+                        <tr ng-repeat="bid in filteredBids">
+                            <td data-title="'User'">
+                                {{bid.user}}
+                            </td>
+                            <td data-title="'Bid'">
+                                {{bid.amount / 100 | currency}}
+                            </td>
+                            <td data-title="'Time'">
+                                {{bid.time | date:'dd/MM/yyyy @ h:mma'}}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+        </div>
     </div>
-</section>
+</div>

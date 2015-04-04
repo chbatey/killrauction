@@ -65,7 +65,6 @@ public class AuctionDao {
     }
 
     public Optional<Auction> getAuction(String auctionName) {
-
         BoundStatement auctionBoundStatement = getAuction.bind(auctionName);
         Row auction = session.execute(auctionBoundStatement).one();
 

@@ -1,0 +1,4 @@
+cassandra:
+  contactPoints:
+    - localhost
+  keyspace: killrauction

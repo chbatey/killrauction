@@ -23,8 +23,9 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session> {
     @Override
     public Session getObject() throws Exception {
         LOGGER.info("Connecting to Cassandra {}", cassandraConfiguration);
+        String[] hosts = new String[cassandraConfiguration.getContactPoints().size()];
         cluster = Cluster.builder()
-                .addContactPoints(cassandraConfiguration.getContactPoints())
+                .addContactPoints(cassandraConfiguration.getContactPoints().toArray(hosts))
                 .build();
         return cluster.connect(cassandraConfiguration.getKeyspace());
     }

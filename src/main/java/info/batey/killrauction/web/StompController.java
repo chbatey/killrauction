@@ -3,7 +3,7 @@ package info.batey.killrauction.web;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.batey.killrauction.domain.BidVo;
-import info.batey.killrauction.observablespike.BidService;
+import info.batey.killrauction.stream.BidService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 
 @Controller

@@ -1,4 +1,4 @@
-package info.batey.killrauction.observablespike;
+package info.batey.killrauction.stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

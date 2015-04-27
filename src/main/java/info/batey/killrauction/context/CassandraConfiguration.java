@@ -5,18 +5,19 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 @ConfigurationProperties(prefix = "cassandra")
 public class CassandraConfiguration {
 
     @NotNull
-    private String[] contactPoints;
+    private List<String> contactPoints;
 
     @NotNull
     private String keyspace;
 
-    public String[] getContactPoints() {
+    public List<String> getContactPoints() {
         return this.contactPoints;
     }
 
@@ -24,7 +25,7 @@ public class CassandraConfiguration {
         return keyspace;
     }
 
-    public void setContactPoints(String[] contactPoints) {
+    public void setContactPoints(List<String> contactPoints) {
         this.contactPoints = contactPoints;
     }
 
@@ -32,11 +33,4 @@ public class CassandraConfiguration {
         this.keyspace = keyspace;
     }
 
-    @Override
-    public String toString() {
-        return "CassandraConfiguration{" +
-                "contactPoints=" + Arrays.toString(contactPoints) +
-                ", keyspace='" + keyspace + '\'' +
-                '}';
-    }
 }

@@ -4,7 +4,7 @@ import com.datastax.driver.core.utils.UUIDs;
 import info.batey.killrauction.domain.Auction;
 import info.batey.killrauction.domain.BidVo;
 import info.batey.killrauction.infrastruture.AuctionDao;
-import info.batey.killrauction.observablespike.BidService;
+import info.batey.killrauction.stream.BidService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

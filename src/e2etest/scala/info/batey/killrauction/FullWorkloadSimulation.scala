@@ -21,7 +21,7 @@ class FullWorkloadSimulation extends Simulation {
 
   val rand: Random = new Random
   val salt: Long = rand.nextLong
-  val n: Long = rand.nextLong()
+  val bidAmount: Long = rand.nextLong()
 
   def createUser(userName: String) = exec(http("create_user").post("/api/user")
     .body(StringBody(s""" {"userName": "$userName", "salt": "$salt", "firstName":"Chris", "lastName":"Batey", "password": "$password", "email":["christopher.batey@gmail.com"] }"""))
@@ -34,8 +34,8 @@ class FullWorkloadSimulation extends Simulation {
     .basicAuth(userName, password)
   )
 
-  def bidRequest(user: String) = exec(http("bid_request").post("/api/auction/Trousers/bid")
-    .body(StringBody(s""" {"name": "Trousers", "amount":"${n}" } """))
+  def bidRequest(user: String) = exec(http("bid $n").post("/api/auction/Trousers/bid")
+    .body(StringBody(""" {"name": "Trousers", "amount":${n} } """))
     .header("Content-Type", "application/json")
     .basicAuth(user, password)).pause(500 milliseconds)
 

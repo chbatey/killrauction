@@ -1,5 +1,7 @@
 package info.batey.killrauction
 
+import java.util.Random
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
@@ -17,19 +19,23 @@ class FullWorkloadSimulation extends Simulation {
   val password = "password"
   val auctionName = "Trousers"
 
+  val rand: Random = new Random
+  val salt: Long = rand.nextLong
+  val n: Long = rand.nextLong()
+
   def createUser(userName: String) = exec(http("create_user").post("/api/user")
-    .body(StringBody(s""" {"userName": "$userName", "firstName":"Chris", "lastName":"Batey", "password": "$password", "email":["christopher.batey@gmail.com"] }"""))
+    .body(StringBody(s""" {"userName": "$userName", "salt": "$salt", "firstName":"Chris", "lastName":"Batey", "password": "$password", "email":["christopher.batey@gmail.com"] }"""))
     .header("Content-Type", "application/json")
   )
 
-  def createAuction(name: String, userName: String, password: String) = exec(http("create auction").post("/api/auction")
-    .body(StringBody(s""" {"name": "$name", "end":${System.currentTimeMillis() + 100000} } """))
+  def createAuction(name: String, userName: String, password: String) = exec(http("create_auction").post("/api/auction")
+    .body(StringBody(s""" {"name": "$name", "end": "${System.currentTimeMillis() + 100000}" } """))
     .header("Content-Type", "application/json")
     .basicAuth(userName, password)
   )
 
-  def bidRequest(user: String) = exec(http("bid $n").post("/api/auction/Trousers/bid")
-    .body(StringBody(""" {"name": "Trousers", "amount":${n} } """))
+  def bidRequest(user: String) = exec(http("bid_request").post("/api/auction/Trousers/bid")
+    .body(StringBody(s""" {"name": "Trousers", "amount":"${n}" } """))
     .header("Content-Type", "application/json")
     .basicAuth(user, password)).pause(500 milliseconds)
 

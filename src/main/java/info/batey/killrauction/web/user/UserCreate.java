@@ -16,18 +16,22 @@ public class UserCreate {
     private String lastName;
     @JsonProperty
     private Set<String> emails;
+    @JsonProperty
+    private Long salt;
 
     @JsonCreator
     public UserCreate(@JsonProperty("username") String userName,
+                      @JsonProperty("salt") Long salt,
                       @JsonProperty("password") String password,
                       @JsonProperty("firstName") String firstName,
                       @JsonProperty("lastName") String lastName,
-                      @JsonProperty("email") Set<String> emails) {
+                      @JsonProperty("emails") Set<String> emails) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.emails = emails;
+        this.salt = salt;
     }
 
     public String getUserName() {
@@ -50,10 +54,13 @@ public class UserCreate {
         return emails;
     }
 
+    public Long getSalt() { return salt; }
+
     @Override
     public String toString() {
         return "UserCreate{" +
                 "userName='" + userName + '\'' +
+                "salt='" + salt + '\'' +
                 ", password='" + password + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

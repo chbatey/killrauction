@@ -17,6 +17,7 @@ import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -63,9 +64,12 @@ public class AuctionUserDaoTest {
     @Test
     public void createsUser() throws Exception {
         //given
-        UserCreate userCreate = new UserCreate("chbatey", "bananas", "chris", "batey", Sets.newHashSet("christopher.batey@gmail.com"));
+        Random rand = new Random();
+        Long salt = rand.nextLong();
+
+        UserCreate userCreate = new UserCreate("chbatey", salt, "bananas", "chris", "batey", Sets.newHashSet("christopher.batey@gmail.com"));
         given(md5PasswordEncoder.encodePassword(anyString(), anyString())).willReturn("saltedPassword");
-        given(secure.nextLong()).willReturn(10l);
+        given(secure.nextLong()).willReturn( salt );
 
         //when
         boolean userCreated = underTest.createUser(userCreate);
@@ -82,13 +86,15 @@ public class AuctionUserDaoTest {
         assertEquals(userCreate.getFirstName(), auctionUser.getFirstName());
         assertEquals(userCreate.getLastName(), auctionUser.getLastName());
         assertEquals(userCreate.getEmails(), auctionUser.getEmails());
-        assertEquals(Long.valueOf(10l), auctionUser.getSalt());
+        assertEquals(Long.valueOf(salt), auctionUser.getSalt());
     }
 
     @Test
     public void createUserThatAlreadyExists() throws Exception {
+        Random rand = new Random();
+        Long salt = rand.nextLong();
         //given
-        UserCreate userCreate = new UserCreate("chbatey", "bananas", "chris", "batey", Sets.newHashSet("christopher.batey@gmail.com"));
+        UserCreate userCreate = new UserCreate("chbatey", salt, "bananas", "chris", "batey", Sets.newHashSet("christopher.batey@gmail.com"));
         underTest.createUser(userCreate);
 
         //when
@@ -105,9 +111,12 @@ public class AuctionUserDaoTest {
 
     @Test
     public void userDoesExist() throws Exception {
+        Random rand = new Random();
+        Long salt = rand.nextLong();
+
         //given
         session.execute("insert into users (user_name, password, salt, first_name, last_name, emails ) VALUES " +
-                                          "( 'chbatey', 'password', 100, 'christopher', 'batey', {'blah@blah.com'} );");
+                                          "( 'chbatey', 'password', "+ salt + ", 'christopher', 'batey', {'blah@blah.com'} );");
         //when
         AuctionUser chbatey = underTest.retrieveUser("chbatey").orElseThrow(() -> new AssertionError("Expected AuctionUser"));
         //then
@@ -115,7 +124,7 @@ public class AuctionUserDaoTest {
         assertEquals("christopher", chbatey.getFirstName());
         assertEquals("batey", chbatey.getLastName());
         assertEquals("password", chbatey.getMd5Password());
-        assertEquals(Long.valueOf(100), chbatey.getSalt());
+        assertEquals(Long.valueOf(salt), chbatey.getSalt());
         assertEquals(Sets.newHashSet("blah@blah.com"), chbatey.getEmails());
     }
 }

@@ -120,8 +120,9 @@ idea {
         testSourceDirs += file('src/e2etest/resources')
     }
 }
-
-task runLoadTest(type: JavaExec) {
+//
+task setupTestData(type: JavaExec) {
+    description = 'Create test users'
     classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath + sourceSets.e2eTest.runtimeClasspath
 
     jvmArgs = [ '-Dgatling.core.directory.binaries=./build/classes/e2eTest' ]
@@ -129,6 +130,17 @@ task runLoadTest(type: JavaExec) {
     main = "io.gatling.app.Gatling"
     // Specify the simulation to run
     args = Eval.me("['-s', 'info.batey.killrauction.UserServiceSimulation']")
+}
+
+task runLoadTest(type: JavaExec) {
+    description = 'Test full workflow with load'
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath + sourceSets.e2eTest.runtimeClasspath
+
+    jvmArgs = [ '-Dgatling.core.directory.binaries=./build/classes/e2eTest' ]
+    // Gatling application
+    main = "io.gatling.app.Gatling"
+    // Specify the simulation to run
+    args = Eval.me("['-s', 'info.batey.killrauction.FullWorkloadSimulation']")
 }
 
 

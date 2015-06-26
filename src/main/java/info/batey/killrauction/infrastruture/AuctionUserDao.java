@@ -21,7 +21,8 @@ public class AuctionUserDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuctionUserDao.class);
 
-    private static final String CREATE_USER_STATEMENT = "INSERT INTO users (user_name, password, salt, first_name , last_name , emails ) values (?, ?, ?, ?, ?, ?) if not exists";
+    private static final String CREATE_USER_STATEMENT = "INSERT INTO users (user_name, salt, emails,first_name , last_name , password ) values (?, ?, ?, ?, ?, ?) if not exists";
+
     private static final String GET_USER_STATEMENT = "select * from users where user_name = ?";
 
     private Session session;
@@ -49,7 +50,9 @@ public class AuctionUserDao {
         LOGGER.debug("Creating user request {}", userCreate);
         Object salt = secureRandom.nextLong();
         String endcodedPassword = md5PasswordEncoder.encodePassword(userCreate.getPassword(), salt);
-        BoundStatement boundStatement = createUser.bind(userCreate.getUserName(), endcodedPassword, salt, userCreate.getFirstName(), userCreate.getLastName(), userCreate.getEmails());
+        //INSERT INTO users (user_name, salt, emails,first_name , last_name , password )
+
+        BoundStatement boundStatement = createUser.bind( userCreate.getUserName(), salt,  userCreate.getEmails(), userCreate.getFirstName(),userCreate.getLastName(), endcodedPassword  );
         LOGGER.debug("Sending to Cassandra {}", userCreate);
         ResultSet response = session.execute(boundStatement);
         boolean applied = response.wasApplied();

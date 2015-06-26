@@ -1,5 +1,6 @@
 package info.batey.killrauction.web.user;
 
+import com.google.common.collect.Sets;
 import info.batey.killrauction.infrastruture.AuctionUserDao;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.Random;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -28,16 +30,21 @@ public class AuctionUserEndpointTest {
 
     @Test
     public void shouldSendUserToDao() throws Exception {
+        Random rand = new Random();
+        Long salt = rand.nextLong();
+        //given
         given(auctionUserDao.createUser(any(UserCreate.class))).willReturn(true);
-        UserCreate userCreate = new UserCreate("username", "password", "firstName", "lastName", Collections.emptySet());
+        UserCreate userCreate = new UserCreate("username", salt, "password", "firstName", "lastName", Collections.emptySet());
         underTest.createUser(userCreate);
         verify(auctionUserDao).createUser(userCreate);
     }
 
     @Test(expected = AuctionUserEndpoint.UserExistsException.class)
     public void userAlreadyExists() throws Exception {
+        Random rand = new Random();
+        Long salt = rand.nextLong();
         given(auctionUserDao.createUser(any(UserCreate.class))).willReturn(false);
-        UserCreate userCreate = new UserCreate("username", "password", "firstName", "lastName", Collections.emptySet());
+        UserCreate userCreate = new UserCreate("username", salt, "password", "firstName", "lastName", Collections.emptySet());
         underTest.createUser(userCreate);
     }
 }

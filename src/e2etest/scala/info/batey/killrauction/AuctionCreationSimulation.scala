@@ -1,6 +1,9 @@
 package info.batey.killrauction
 
+import java.util.Random
+
 import io.gatling.core.Predef._
+import io.gatling.core.feeder.FeederWrapper
 import io.gatling.http.Predef._
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
@@ -16,13 +19,15 @@ class AuctionCreationSimulation extends Simulation {
   val httpConf = http
     .baseURL("http://localhost:8080")
     .doNotTrackHeader("1")
-
+  
   val userName = "chris"
   val password = "password"
+  val rand: Random = new Random
+  val salt: Long = rand.nextLong
 
   val scn = scenario("Create Auction")
     .exec(http("create_user").post("/api/user")
-      .body(StringBody(s""" {"userName": "$userName", "firstName":"Chris", "lastName":"Batey", "password": "$password", "email":["christopher.batey@gmail.com"] }"""))
+      .body(StringBody(s""" {"userName": "$userName", "salt": "$salt", "firstName":"Chris", "lastName":"Batey", "password": "$password", "email":["christopher.batey@gmail.com"] }"""))
       .header("Content-Type", "application/json")
     )
     .repeat(100) {

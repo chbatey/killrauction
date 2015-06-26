@@ -17,3 +17,6 @@ Immutable tests
 New bid = add to steam + save
 On initial request built stream from DB
 RxJava streaming of auction events over HTTP
+
+Implement Feeder objects for the Gatling scripts. This will allow creation of more users & auctions
+Wire up debug level control for Gatling (it's currently 'stuck' in trace mode)
